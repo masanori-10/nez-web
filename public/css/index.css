@@ -179,7 +179,7 @@ p.title-border {
     opacity:0;
     font-size: 22px;
 }
-.fileUploader:hover > button{
+.fileUploader:hover > .btn.btn-default{
   background-color: #ebebeb;
   border-color: #adadad;
 }
@@ -193,4 +193,8 @@ p.title-border {
   height:;
   opacity:;
   transition: all .08s cubic-bezier(.4,0,.2,1);
+}
+
+#visualOutput{
+  transition: all .2s cubic-bezier(.4,0,.2,1);
 }

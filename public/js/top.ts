@@ -176,9 +176,10 @@ function visualizeCallback(e: Event){
   var src = inputEditor.getValue();
   visualize(src, p4d, function(res){
     console.log(res);
+    $("#visualOutput").css("display", "");
+    $("#visualOutput").css("box-shadow","")
+    $("#visualOutput").empty();
     if(res.runnable){
-      $("#visualOutput").css("display", "");
-      $("#visualOutput").empty();
       var UA = VisModelJS.Utils.UserAgant;
       var root = document.getElementById("visualOutput");
       var panel = new VisModelJS.VisualModelPanel(root);
@@ -199,6 +200,10 @@ function visualizeCallback(e: Event){
             panel.Draw(panel.TopNodeView.label, 300, node);
           }
       });
+    } else {
+      document.getElementById("visualOutput").innerText = res.source;
+      $("#visualOutput").css("box-shadow","inset 0 1px 1px rgba(0,0,0,.075),0 0 6px #ce8483")
+      //$("#visualOutput").append(res.source);
     }
   }, () => {
     console.log("sorry");
