@@ -1,7 +1,12 @@
-# Pull base image.
+# How to use Dockerfile
+# $ cd /path/to/nez-web
+# $ docker build -t your_repo:your_tag .
+# $ docker run -i -t -d -p 3000:3000 your_repo:your_tag
+
+# Pull Base image
 FROM ubuntu:14.04
 
-# Install Java.
+# Install Java and Node.js
 RUN \
   apt-get update && \
   apt-get -y upgrade && \
