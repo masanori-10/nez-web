@@ -55,12 +55,11 @@ block content
                   |None&nbsp&nbsp
                   span.caret
                 ul.dropdown-menu(role="menu", aria-labelledby="dropdownInput")
-                  li(role="presentation")
-                    .fileUploader(style="display: inline")
-                      input.uploader(type="file", id="p4d")
-                      .importp4d(style="position: relative; padding: 4px 12px;", id="p4d")
-                        span.glyphicon.glyphicon-folder-open
-                        span.text &nbsp&nbsp&nbspImport
+                  li.fileUploader(role="presentation", style="display: inline")
+                    input.uploader(type="file", id="p4d", style="height: 30px; width: 158px;")
+                    .importp4d(style="position: relative; padding: 4px 12px;", id="p4d")
+                      span.glyphicon.glyphicon-folder-open
+                      span.text &nbsp&nbsp&nbspImport
                   li(role="presentation")
                     a(role="menuitem", tabindex="-1", value="c99") C
                   li(role="presentation")
