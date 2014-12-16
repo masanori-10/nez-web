@@ -1,0 +1,112 @@
+//
+// peg for markdown
+// ("GFM" means "GitHub Flavored Markdown".)
+//
+
+
+File
+	= Statements !.
+
+Chunk
+	= Quote
+
+TopLevel
+	= _ Statements _
+
+Statements
+	= { (@Quote)+ #source }
+
+_
+	= (!NL [ \t])*
+
+BREAK
+	= '\n' / '\r\n' / '\r' 
+
+NL
+	= [ \t] [ \t] &BREAK
+
+DIGIT
+	= [0-9]
+
+Quote
+	= {'>' #quote} @Quote
+	/ Statement
+
+Statement
+	= Hr / Code / Item / Head / Text / Blank
+
+Code
+	= { ( [ \t] [ \t] [ \t] [ \t]+ '```' @{ (!'```' .)* #code } '```' _ eos )+ #multilinecode }
+	/ { ( [ \t] [ \t] [ \t] [ \t]+ '``' @{ (!'``' .)* #code } '``' _ eos )+ #multilinecode }
+	/ { ( [ \t] [ \t] [ \t] [ \t]+ '`' @{ (!'`' .)* #code } '`' _ eos )+ #multilinecode }
+	/ _ '```' { @{ (!'```' !BREAK .)* #code } #singlelinecode } '```' _ eos
+	/ _ '``' { @{ (!'``' !BREAK .)* #code } #singlelinecode } '``' _ eos
+	/ _ '`' { @{ (!'`' !BREAK .)* #code } #singlelinecode } '`' _ eos
+
+Item
+	= [ \t] [ \t] [ \t] [ \t] [ \t] [ \t] [ \t] [ \t]+ ('*'/'+'/'-') [ \t]+ { (!BREAK !NL .)* #ul_li_3 } _ eos
+	/ [ \t] [ \t] [ \t] [ \t] [ \t] [ \t] [ \t] [ \t]+ DIGIT+ '.' [ \t]+ { (!BREAK !NL .)* #ol_li_3 } _ eos
+	/ [ \t] [ \t] [ \t] [ \t]+ ('*'/'+'/'-') [ \t]+ { (!BREAK !NL .)* #ul_li_2 } _ eos
+	/ [ \t] [ \t] [ \t] [ \t]+ DIGIT+ '.' [ \t]+ { (!BREAK !NL .)* #ol_li_2 } _ eos
+	/  _ ('*'/'+'/'-') [ \t]+ { (!BREAK !NL .)*#ul_li_1 } _ eos
+	/ _ DIGIT+ '.' [ \t]+ { (!BREAK !NL .)* #ol_li_1 } _ eos
+
+Head
+	= { '######' _ @{ (!BREAK !NL !'#' .)* #span } _ '#'* _ eos #h6 }
+	/ { '#####' _ @{ (!BREAK !NL !'#' .)* #span } _ '#'* _ eos #h5 }
+	/ { '####' _ @{ (!BREAK !NL !'#' .)* #span } _ '#'* _ eos #h4 }
+	/ { '###' _ @{ (!BREAK !NL !'#' .)* #span } _ '#'* _ eos #h3 }
+	/ { '##' _ @{ (!BREAK !NL !'#' .)* #span } _ '#'* _ eos #h2 }
+	/ { '#' _ @{ (!BREAK !NL !'#' .)* #span } _ '#'* _ eos #h1 }
+	/ { @{ (!BREAK !NL .)* #span } _ eos _ '-'+ _ eos #h2 }
+	/ { @{ (!BREAK !NL .)* #span } _ eos _ '='+ _ eos #h1 }
+
+Hr
+	= _ eos _ '*' _ '*' _ '*' ( _ '*')* _ eos { #hr }
+	/ _ eos _ '-' _ '-' _ '-' ( _ '-')* _ eos { #hr }
+	/ _ eos _ '_' _ '_' _ '_'( _ '_')* _ eos { #hr }
+
+Blank
+	= _ BREAK { #emptyLine }
+
+NewLine
+	= NL { #br }
+
+eos
+	= (@NewLine)? BREAK
+	/ !.
+
+Text
+	= { (@TextMaterial)+ _ eos #text }
+
+NoBreakText
+	= { (@TextMaterial)+ #text }
+
+TextMaterial
+	= { '[' @{ (!']' .)* #name } ']:' #a }
+	/ { '[' @{ (@NoBLetter)* #alt } '][' @{ (!']' .)* #href } ']' #a }
+	/ { '[' @{ (@NoBLetter)* #alt } '](' @{ (!')' .)* #href } ')' #a }
+	/ { '![' @{ (@NoBLetter)* #alt } '](' @{ (!')' .)* #href } ')' #img }
+	/ { @{ 'http' (![ \t] .)* #href } #a }		//GFM
+	/ Letter
+
+Letter
+	= [ /t]* '~~' [ /t]* { (!'~~' TEXT)* #strike } [ /t]* '~~' (!NL [ /t])*		//GFM
+	/ [ /t]* '**' [ /t]* { (!'**' TEXT)* #bold } [ /t]* '**' (!NL [ /t])*
+	/ [ /t]* '*' [ /t]* { (!'*' TEXT)* #italic } [ /t]* '*' (!NL [ /t])*
+	/ [ /t]* '__' [ /t]* { (!'__' TEXT)* #bold } [ /t]* '__' (!NL [ /t])*
+	/ [ /t]* '_' [ /t]* { (!'_' TEXT)* #italic } [ /t]* '_' (!NL [ /t])*
+	/ { TEXT+ #span }
+
+NoBLetter
+	= [ /t]* '~~' [ /t]* { (!'~~' !'](' TEXT)* #strike } [ /t]* '~~' (!NL [ /t])*		//GFM
+	/ [ /t]* '**' [ /t]* { (!'**' !'](' TEXT)* #bold } [ /t]* '**' (!NL [ /t])*
+	/ [ /t]* '*' [ /t]* { (!'*' !'](' TEXT)* #italic } [ /t]* '*' (!NL [ /t])*
+	/ [ /t]* '__' [ /t]* { (!'__' !'](' TEXT)* #bold } [ /t]* '__' (!NL [ /t])*
+	/ [ /t]* '_' [ /t]* { (!'_' !'](' TEXT)* #italic } [ /t]* '_' (!NL [ /t])*
+	/ { (!'](' TEXT)+ #span }
+
+TEXT
+	= !'![' !'[' !']' !([ /t]+ '~') !([ /t]+ '*') !([ /t]+ '_') !'http' !NL !BREAK .
+
+//	[\x21-\x29\x2C\x2D\x2F-\x5A\x5E\x5F\x61-\x7E\\\.]
