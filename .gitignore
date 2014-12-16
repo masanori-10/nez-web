@@ -12,3 +12,6 @@ doc/
 !public/doc/
 
 .DS_Store
+
+nez/
+!nez/nez-0.9.jar
