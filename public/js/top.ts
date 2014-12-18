@@ -160,6 +160,8 @@ function runCallback(e: Event){
 }
 
 function visualize(source, p4d, callback, onerror){
+  $("#visualOutput").css("display", "");
+  $("#visualOutput").css("box-shadow","")
   $("#visualOutput").empty();
   $("#visualOutput").append("<div style='text-align:center;margin-top:2em;font-size:4em'> <i class='fa fa-spinner fa-spin'> </div>")
   $.ajax({
@@ -178,8 +180,6 @@ function visualizeCallback(e: Event){
   var src = inputEditor.getValue();
   visualize(src, p4d, function(res){
     console.log(res);
-    $("#visualOutput").css("display", "");
-    $("#visualOutput").css("box-shadow","")
     $("#visualOutput").empty();
     if(res.runnable){
       var UA = VisModelJS.Utils.UserAgant;
