@@ -142,6 +142,8 @@ function runCallback(e) {
     });
 }
 function visualize(source, p4d, callback, onerror) {
+    $("#visualOutput").empty();
+    $("#visualOutput").append("<div style='text-align:center;margin-top:2em;font-size:4em'> <i class='fa fa-spinner fa-spin'> </div>");
     $.ajax({
         type: "POST",
         url: Config.basePath + "./visualize",
