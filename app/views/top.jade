@@ -30,17 +30,10 @@ block content
         .input-area.input-area-konoha
           .collapse-block(id="konoha")
             .ground-label(id="konoha")
-              span.text(id="konoha") Input Source&nbsp&nbsp&nbsp&nbsp
-                span File:&nbsp&nbsp
-                .fileUploader(style="display: inline")
-                  input.uploader(type="file", id="source", style="margin-left: 142px; margin-top: 2px; height: 30px; width: 94px;")
-                  .btn.btn-default(style="position: relative; padding: 4px 12px;", id="source")
-                    span.glyphicon.glyphicon-folder-open
-                    span.text &nbsp&nbsp&nbspImport
-                  span.txt(style="padding-left: 5px; font-size: 14px; padding-top: 2px; vertical-align: middle") None
+              span.text(id="konoha") Input Source
             pre#konohaEditor(name="example", style="height: calc(100% - 40px)")
         .output-area(style="width: 50%")
-          .collapse-block.konoha-result(style="width: 100%; height: 100%; font-size: 24px; padding: 10px;", id="konoha") konoha
+          .collapse-block.konoha-result(style="width: 100%; height: 100%; font-size: 24px; padding: 10px;", id="konoha") Result
   .container#nez(style="height: 100%")
     .row(id="topbar")
       //- .title NEZ
