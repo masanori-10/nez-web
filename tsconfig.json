@@ -1,0 +1,42 @@
+{
+    "version": "1.5.0-alpha",
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "declaration": false,
+        "noImplicitAny": false,
+        "removeComments": true,
+        "noLib": false
+    },
+    "filesGlob": [
+        "./**/*.ts",
+        "!./node_modules/**/*.ts"
+    ],
+    "files": [
+        "./app/helper/auth.ts",
+        "./app/helper/post.ts",
+        "./app/routes/index.ts",
+        "./app/routes/post.ts",
+        "./public/js/top.ts",
+        "./public/vendor/vmjs/app.ts",
+        "./public/vendor/vmjs/src/vismodeljs/LayoutEngine.ts",
+        "./public/vendor/vmjs/src/vismodeljs/NodeView.ts",
+        "./public/vendor/vmjs/src/vismodeljs/Shape.ts",
+        "./public/vendor/vmjs/src/vismodeljs/Utils.ts",
+        "./public/vendor/vmjs/src/vismodeljs/Viewport.ts",
+        "./public/vendor/vmjs/src/vismodeljs/VisualModelPanel.ts",
+        "./server.ts",
+        "./typings/ace/ace.d.ts",
+        "./typings/config/config.d.ts",
+        "./typings/express/express.d.ts",
+        "./typings/jquery/jquery_plugins.d.ts",
+        "./typings/jquery/jquery.d.ts",
+        "./typings/jstree/jstree.d.ts",
+        "./typings/lodash/lodash.d.ts",
+        "./typings/node/node.d.ts",
+        "./typings/vmjs/vmjs.d.ts"
+    ],
+    "atom": {
+        "rewriteTsconfig": true
+    }
+}

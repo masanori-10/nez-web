@@ -1,11 +1,9 @@
-﻿var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var Debug = {};
-
 var PegNodeShape = (function (_super) {
     __extends(PegNodeShape, _super);
     function PegNodeShape() {
@@ -15,10 +13,8 @@ var PegNodeShape = (function (_super) {
         if (this.Content == null) {
             var div = document.createElement("div");
             this.Content = div;
-
             div.id = this.NodeView.label;
             div.setAttribute("data-nodelabel", this.NodeView.label);
-
             if (this.NodeView.label) {
                 var h4 = document.createElement("h4");
                 h4.textContent = "#" + this.NodeView.label.split("#")[1];
@@ -32,7 +28,6 @@ var PegNodeShape = (function (_super) {
             this.UpdateHtmlClass();
         }
     };
-
     PegNodeShape.prototype.PrepareSVGContent = function () {
         _super.prototype.PrepareSVGContent.call(this);
         this.BodyRect = VisModelJS.Utils.createSVGElement("rect");
@@ -41,7 +36,6 @@ var PegNodeShape = (function (_super) {
             this.ShapeGroup.appendChild(PegNodeShape.ModuleSymbolMaster.cloneNode());
         }
     };
-
     PegNodeShape.prototype.FitSizeToContent = function () {
         this.BodyRect.setAttribute("width", this.GetNodeWidth().toString());
         this.BodyRect.setAttribute("height", this.GetNodeHeight().toString());
@@ -50,7 +44,6 @@ var PegNodeShape = (function (_super) {
             var y = (this.GetNodeHeight() + 20).toString();
         }
     };
-
     PegNodeShape.prototype.UpdateHtmlClass = function () {
         this.Content.className = "node node-peg";
     };
@@ -63,7 +56,6 @@ var PegNodeShape = (function (_super) {
     })();
     return PegNodeShape;
 })(VisModelJS.Shape);
-
 var PegShapeFactory = (function (_super) {
     __extends(PegShapeFactory, _super);
     function PegShapeFactory() {
@@ -74,7 +66,6 @@ var PegShapeFactory = (function (_super) {
     };
     return PegShapeFactory;
 })(VisModelJS.ShapeFactory);
-
 var sampleData = {
     tag: "JSON",
     value: [
@@ -128,27 +119,32 @@ var sampleData = {
         }
     ]
 };
-
 var createNodeViewFromP4DJson = function () {
     var i = 0;
     return function (json) {
         var node = new VisModelJS.TreeNodeView();
-        node.label = (i++).toString() + "#" + json.tag;
+        if (json.label !== "null") {
+            node.label = (i++).toString() + "#" + json.tag + " $" + json.label;
+        }
+        else {
+            node.label = (i++).toString() + "#" + json.tag;
+        }
         if (json.value) {
             if (json.value.constructor.name == "Array") {
                 json.value.forEach(function (json) {
                     node.appendChild(createNodeViewFromP4DJson(json));
                 });
-            } else if (json.value.constructor.name == "String") {
+            }
+            else if (json.value.constructor.name == "String") {
                 node.content = json.value.toString();
-            } else {
+            }
+            else {
                 node.appendChild(createNodeViewFromP4DJson(json.value));
             }
         }
         return node;
     };
 }();
-
 window.onload = function () {
     // IE dose not have Function#name. but it is needed for imprement 'instanceof'
     if (!("name" in Function.prototype)) {
@@ -158,15 +154,11 @@ window.onload = function () {
             }
         });
     }
-
     //Browser detection
     var UA = VisModelJS.Utils.UserAgant;
-
     //if (!UA.isBlink() && !UA.isWebkit() && !UA.isGecko()) {
     //    alert('Not supported browser. Use Chrome/Safari/FireFox.');
     //    return;
     //}
     VisModelJS.ShapeFactory.SetFactory(new PegShapeFactory());
-
 };
-//# sourceMappingURL=app.js.map

@@ -9,6 +9,6 @@ run:
   port: 3000
   path: '/run'
 nez:
-    path: './nez/nez-0.9.jar'
+    path: './nez/nez.jar'
     option: 'parse'
     env: ''

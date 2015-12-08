@@ -120,6 +120,7 @@ var sampleData = {
 interface P4DNode {
     tag: string;
     value: Object;
+    label: string;
 }
 
 
@@ -128,7 +129,11 @@ var createNodeViewFromP4DJson = function () {
     var i = 0;
     return function (json: P4DNode) {
         var node = new VisModelJS.TreeNodeView();
-        node.label = (i++).toString() + "#" + json.tag;
+        if(json.label !== "null"){
+          node.label = (i++).toString() + "#" + json.tag + " $" + json.label;
+        } else {
+          node.label = (i++).toString() + "#" + json.tag;
+        }
         if (json.value) {
             if ((<any>json.value.constructor).name == "Array") {
                 (<P4DNode[]>json.value).forEach(json => {

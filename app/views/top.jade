@@ -19,36 +19,36 @@ block loadFiles
   +js('./js/top.js')
 
 block content
-  .container(style="top: -91px; height: 100%")
+  .container(style="height: 100%")
     .row(id="topbar")
-      .title NEZ
-      p.title-border.title-border-left
-      p.title-border.title-border-right
-      .navbar-header(role="navigation")
-        span.navbar-item-filter
-        span.navbar-item(id="navbar-overview")
-          span.navbar-content Overview
-        span.navbar-item(id="navbar-documents")
-          span.navbar-content Documents
-        span.navbar-item(id="navbar-playground")
-          span.navbar-content-active Playground
-      p.title-border.title-border-left
-      p.title-border.title-border-right
-    .row.row-content(id="overview")
-      h2 Overview
-      p.content
-        | NEZ is ......
-    .row.row-content(id="documents")
-      h2 Documents
+      //- .title NEZ
+    //-   p.title-border.title-border-left
+    //-   p.title-border.title-border-right
+    //-   .navbar-header(role="navigation")
+    //-     span.navbar-item-filter
+    //-     span.navbar-item(id="navbar-overview")
+    //-       span.navbar-content Overview
+    //-     span.navbar-item(id="navbar-documents")
+    //-       span.navbar-content Documents
+    //-     span.navbar-item(id="navbar-playground")
+    //-       span.navbar-content-active Playground
+    //-   p.title-border.title-border-left
+    //-   p.title-border.title-border-right
+    //- .row.row-content(id="overview")
+    //-   h2 Overview
+    //-   p.content
+    //-     | NEZ is ......
+    //- .row.row-content(id="documents")
+    //-   h2 Documents
     .row.row-content(id="playground", style="left:0px;")
       .header
-        h2(style="display:inline-block") Try NEZ
+        h2(style="display:inline-block") Try Nez
         span.btn.btn-primary(type="button", id="run", style="margin-left:20px;display:none;") Run
         span.btn.btn-info.visualize-btn(style="display:none;") Visualize
       .input-area
         .collapse-block(id="peg4d")
           .ground-label(id="peg4d")
-            span.text(id="peg4d") PEG4d Grammar&nbsp&nbsp&nbsp&nbsp
+            span.text(id="peg4d") Nez Grammar&nbsp&nbsp&nbsp&nbsp
               .dropdown(style="display: inline")
                 span File:&nbsp&nbsp
                 button.btn.btn-default.dropdown-toggle.txt(type="button", data-toggle="dropdown", id="dropdownInput")
