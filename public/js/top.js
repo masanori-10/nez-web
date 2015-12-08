@@ -161,7 +161,7 @@ function runCallback(e) {
     var src = konohaEditor.getValue();
     runKonoha(src, function (res) {
         console.log(res);
-        $(".konoha-result[id='konoha']").text(res.source);
+        $(".konoha-result[id='konoha']").val(res.source);
     }, function () {
         console.log("sorry");
     });
