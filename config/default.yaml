@@ -12,3 +12,7 @@ nez:
     path: './nez/nez.jar'
     option: 'parse'
     env: ''
+konoha:
+    path: './konoha/konoha.jar'
+    option: ''
+    env: ''

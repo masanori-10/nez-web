@@ -1,0 +1,582 @@
+// C (ISO/IEC 9899:2011)
+// ===============
+//
+// Based on grammar from ISO/IEC 9899:2011 [1].
+//
+// Limitations:
+//
+//   * Non-BMP characters are completely ignored to avoid surrogate pair
+//     handling.
+//
+// Many thanks to inimino [3] for his grammar [4] which helped me to solve some
+// problems (such as automatic semicolon insertion) and also served to double
+// check that I converted the original grammar correctly.
+//
+// [1] ISO/IEC 9899:2011
+File                       = _ { ( $(TopLevel) / _ )* #Source } EOT
+_                          = ( S / BLOCKCOMMENT / LINECOMMENT / ATTRIBUTE )*
+S                          = [ \n\r\t\u000B\u000C]
+BLOCKCOMMENT               = '/*' ( !'*/' . )* '*/'
+LINECOMMENT                = '//' ( !'\n' . )*
+                           / "#" ( &'\\\n' . . / !'\n' . )*
+ATTRIBUTE                  = '__attribute__' !W _ '((' ATTRIBUTECONTENT '))' _
+                           / '__asm' !W _ '(' ( !')' . )* ')' _
+ATTRIBUTECONTENT           = NAME _ '(' ('"' STRING_CONTENT* '"' / ( !')' . )*) _ ')' _
+                           / _ ( !'))' . )* _
+EOL                        = '\r'? '\n'
+                           / !.
+DIGIT                      = [0-9]
+HEX                        = [A-Fa-f0-9]
+W                          = [a-zA-Z0-9_]
+                           / UCHAR
+UCHAR                      = '\\u' HEX4
+                           / '\\U' HEX4 HEX4
+HEX4                       = HEX HEX HEX HEX
+Name                       = { NAME #Name } _
+NAME                       = !DIGIT !( KEYWORD !W ) W+
+KEYWORD                    = 'auto'
+                           / 'break'
+                           / 'case'
+                           / 'char'
+                           / 'const'
+                           / 'continue'
+                           / 'default'
+                           / 'double'
+                           / 'do'
+                           / 'else'
+                           / 'enum'
+                           / 'extern'
+                           / 'float'
+                           / 'for'
+                           / 'goto'
+                           / 'if'
+                           / 'int'
+                           / 'inline'
+                           / 'long'
+                           / 'register'
+                           / 'restrict'
+                           / 'return'
+                           / 'short'
+                           / 'signed'
+                           / 'sizeof'
+                           / 'static'
+                           / 'struct'
+                           / 'switch'
+                           / 'typedef'
+                           / 'union'
+                           / 'unsigned'
+                           / 'void'
+                           / 'volatile'
+                           / 'while'
+                           / '_Bool'
+                           / '_Complex'
+                           / '_Imaginary'
+                           / '_stdcall'
+                           / '__declspec'
+                           / '__attribute__'
+                           / '__asm'
+"++"                       = '++' _
+"--"                       = '--' _
+"&"                        = '&' !'&' _
+"*"                        = '*' !'=' _
+"+"                        = '+' ![+=] _
+"-"                        = '-' !( '-' / [=>] ) _
+"~"                        = '~' _
+"!"                        = '!' !'=' _
+"void"                     = 'void' !W
+"char"                     = 'char' !W
+"short"                    = 'short' !W
+"int"                      = 'int' !W
+"long"                     = 'long' !W
+"float"                    = 'float' !W
+"double"                   = 'double' !W
+"signed"                   = 'signed' !W
+"unsigned"                 = 'unsigned' !W
+"_Bool"                    = '_Bool' !W
+"_Complex"                 = '_Complex' !W
+"struct"                   = 'struct' !W
+"union"                    = 'union' !W
+"{"                        = '{' _
+"["                        = '[' _
+"]"                        = ']' _
+","                        = ',' _
+"..."                      = '...' _
+":"                        = ':' ![>] _
+"/"                        = '/' !'=' _
+"%"                        = '%' ![=>] _
+"<<"                       = '<<' !'=' _
+">>"                       = '>>' !'=' _
+"<="                       = '<=' _
+">="                       = '>=' _
+"<"                        = '<' ![=] _
+">"                        = '>' ![=] _
+"=="                       = '==' _
+"!="                       = '!=' _
+"^"                        = '^' ![=] _
+"|"                        = '|' ![=] _
+"&&"                       = '&&' _
+"||"                       = '||' _
+"?"                        = '?' _
+";"                        = ';' _
+"}"                        = '}' _
+"->"                       = '->' _
+"enum"                     = 'enum' !W
+"__asm"                    = '__asm' !W
+"case"                     = 'case' !W
+"default"                  = 'default' !W
+"if"                       = 'if' !W
+"else"                     = 'else' !W
+"switch"                   = 'switch' !W
+"while"                    = 'while' !W
+"do"                       = 'do' !W
+"for"                      = 'for' !W
+"goto"                     = 'goto' !W
+"continue"                 = 'continue' !W
+"break"                    = 'break' !W
+"return"                   = 'return' !W
+"*="                       = '*=' _
+"/="                       = '/=' _
+"%="                       = '%=' _
+"+="                       = '+=' _
+"-="                       = '-=' _
+"<<="                      = '<<=' _
+">>="                      = '>>=' _
+"&="                       = '&=' _
+"^="                       = '^=' _
+"|="                       = '|=' _
+"="                        = '=' !'=' _
+"."                        = '.' _
+"'"                        = '\'' _
+"sizeof"                   = 'sizeof' !W _
+"typedef"                  = 'typedef' !W _
+"extern"                   = 'extern' !W _
+"static"                   = 'static' !W _
+"auto"                     = 'auto' !W _
+"register"                 = 'register' !W _
+"const"                    = 'const' !W _
+"restrict"                 = 'restrict' !W _
+"volatile"                 = 'volatile' !W _
+"_Atomic"                  = '_Atomic' !W _
+
+"__declspec"               = '__declspec' !W _
+"__inline"                 = '__inline' !W _
+"__signed"                 = '__signed' !W _
+"__builtin_va_list"        = '__builtin_va_list' !W _
+"inline"                   = 'inline' !W _
+"_stdcall"                 = '_stdcall' !W _
+"node_type_t"              = 'node_type_t' !W _
+"("                        = '(' _
+")"                        = ')' _
+"#"                        = '#' _
+"include"                  = 'include' !W _
+"define"                   = 'define' !W _
+
+EOT                        = !.
+TopLevel                   = Directive
+                           / TypeDef
+                           / Declaration
+                           / ExternBlock
+                           / { #Empty } ";"
+ExternBlock                = _ { 'extern' _ '\"C\"' _ "{" ( $(TopLevel) / _ )* "}" #Source } _
+Declaration                = FunctionDeclaration
+                           / StructDeclaration _ ";"
+                           / VariableDeclaration
+Directive                  = "#" "include" { ( !'\n' . )* #Include }
+                           / "#" "define" { ( &'\\\n' . . / !'\n' . )* #Define }
+                           / "#" { ( &'\\\n' . . / !'\n' . )* #TODO }
+FunctionDeclaration        = { $(AnnotationList) $type(Type) _ $name(Name) _ "(" $(FunctionParamList) ")" (_ $(Block) / _ ";") #Function }
+                           / { $(AnnotationList) $type(Type) _ $(Block) #Function }
+AnnotationList             = { $(Annotation)* #List } _
+Annotation                 = "extern" { #KeyValue $({ `extern` #Key }) $({ `true` #Value }) } _
+                           / "static" { #KeyValue $({ `static` #Key }) $({ `true` #Value }) } _
+                           / "inline" { #KeyValue $({ `inline` #Key }) $({ `true` #Value }) } _
+                           / "__inline" { #KeyValue $({ `__inline` #Key }) $({ `true` #Value }) } _
+                           / "auto" { #KeyValue $({ `auto` #Key }) $({ `true` #Value }) } _
+                           / "register" { #KeyValue $({ `register` #Key }) $({ `true` #Value }) } _
+                           / "volatile" { #KeyValue $({ `volatile` #Key }) $({ `true` #Value }) } _
+                           / "__declspec" "(" { #KeyValue $({ `volatile` #Key }) $(Name #Value) } _ ")" _
+                           / "inline" { #KeyValue $({ `inline` #Key }) $({ `true` #Value }) } _
+                           / "_stdcall" { #KeyValue $({ `stdcall` #Key }) $({ `true` #Value }) } _
+FunctionParamList          = { ( $(FunctionParam) ( "," $(FunctionParam) )* )? ( "," "..." )? #List }
+                           / { _ 'void' _ #List }
+FunctionParam              = { $(Type) _ $(VarName)? #Param } _
+
+example Directive ~8fc4d0 #include<stdio.h> 
+example ExternBlock ~9efea3 extern "C" {void add();}
+example FunctionDeclaration ~22dd3c '''
+int main(){
+}
+'''
+example FunctionDeclaration ~12710e '''
+static int main(){
+}
+'''
+example FunctionDeclaration ~1195e4 '''
+int add(int a, int b){
+}
+'''
+example FunctionDeclaration ~2def48 '''
+int main(){
+int a = add(b,c);
+return a;
+}
+'''
+example FunctionDeclaration ~a04c1e '''
+int fibo(int n) {
+	if(n < 3) return 1;
+	return fibo(n-1)+fibo(n-2);
+}
+'''
+
+// Declaration
+//==============
+TypeDef                    = { "typedef" _ $type(Type) _ $(TypeDefName) _ ( ',' _ $(TypeDefName) _ )* ";" #TypeDeclaration }
+TypeDefName                = { "*" $name(TypeDefName) #PointerName } _
+                           / <symbol TypeName> _ {$name "[" $size(ConstantExpression)? "]" #ArrayName / "(" $param(FunctionParamList) ")" #TFunc }*
+TypeName                   = { NAME #Name }
+VariableDeclaration        = { $(AnnotationList) $type(Type) $(InitDecl) ( "," $(InitDecl) )* ATTRIBUTE? ";" #Declaration }
+                           / { $(AnnotationList) $type(Type) ( "=" $expr(Initializer) )? ( "," $(InitDecl) )* ATTRIBUTE? ";" #Declaration }
+InitDecl                   = { $name(VarName) ( "=" $expr(Initializer) )? #VarDecl } _
+InitDeclAssign             = { $name(VarName) "=" $expr(Initializer) #VarDecl } _
+VarName                    = { "*" $name(VarName) #PointerName } _
+                           / Name {$name "[" $size(ConstantExpression)? "]" #ArrayName / "(" $param(FunctionParamList) ")" #TFunc }*
+Initializer                = AssignmentExpression
+                           / ArrayInitializer
+ArrayInitializer           = "{" { ( $(Initializer) ( "," $(Initializer) )* )? ","? #Array } "}"
+
+example TypeDef ~5fc3cf typedef unsigned char BYTE;
+example TypeDef ~927c50 '''
+typedef struct {
+int no;
+char name[20];
+} PERSON;
+'''
+example VariableDeclaration ~0cf1e0 int a;
+example VariableDeclaration ~83437a int a,*b,c;
+example VariableDeclaration ~ef2263 int a=0;
+example VariableDeclaration ~4bd8c5 int a=0,b=1,c=2;
+example VariableDeclaration ~2bdd12 int * restrict array;
+example VariableDeclaration ~cfaf2c int[] a={1,2,3};
+example VariableDeclaration ~df76ed int x __attribute__ ((aligned (16)));
+example VariableDeclaration ~01fa16 '''
+int[][] id = {
+{1,2,3},
+{4,5,6}
+};
+'''
+
+//Type
+//====
+Type                       = { _TypeQualifier $(TypeSuffix) } _
+                           / TypeSuffix
+_TypeQualifier             = "const" #TConst
+                           / "volatile" #TVolatile
+                           / "restrict" #TRestrict
+                           / "_Atomic" #TAtomic
+TypeSuffix                 = PrimaryType {$ POINTER_QUALIFIER? "*" POINTER_QUALIFIER? #TPointer / "[" (NAME / DIGIT*) "]" #TArray / _ _TypeQualifier }*
+POINTER_QUALIFIER          = "const"
+                           / "restrict"
+                           / "volatile"
+PrimaryType                = StructDeclaration
+                           / { "void" #TVoid } _
+                           / { SIGN? CONST? "char" #TInt } _
+                           / { SIGN? CONST? "short" _ "int" #TInt } _
+                           / { SIGN? CONST? "short" #TInt } _
+                           / { SIGN? CONST? "int" #TInt } _
+                           / { "float" _ #TFloat } _
+                           / { "double" _ #TFloat } _
+                           / { "long" _ "double" _ #TFloat } _
+                           / { "long" ( _ SIGN )? ( _ "long" )? ( _ "int" )? #TInt } _
+                           / { SIGN? "long" ( _ "long" )? ( _ "int" )? #TInt } _
+                           / { "signed" `signed int` #TInt } _
+                           / { "unsigned" `unsigned int` #TInt } _
+                           / { "_Bool" #TBoolean } _
+                           / { "_Complex" #TComplex } _
+                           / { "__builtin_va_list" #TName } _
+                           / { "node_type_t" #TName } _
+                           / { $(<isa TypeName>) #TTypedef } _
+StructDeclaration          = { "struct" _ $name(Name)? _StructMember? #TStruct }
+                           / { "union" _ $name(Name)? _StructMember? #TUnion }
+                           / { "enum" _ $name(Name)? ( "{" $(EnumeratorList) ","? "}" )? #TEnum }
+SIGN                       = ("signed" / "unsigned" / "__signed") _
+CONST                      = "const" _
+NAME_T                     = !DIGIT ( !( '_t' !W ) W )+ '_t' !W
+_StructMember              = '{' _ ( $(Directive) / $(StructMemberDeclaration) / _ )* _ "}"
+StructMemberDeclaration    = { $(AnnotationList) $type(Type) $(StructMemberName) ( "," $(StructMemberName) )* ";" _ #StructMemberDeclaration }
+                           / { $type(Type) ";" _ #StructMemberDeclaration }
+StructMemberName           = VarName {$name ":" $value(ConstantExpression) #Bit }*
+                           / { ":" $value(ConstantExpression) #Bit }
+EnumeratorList             = { $(Enumerator) ( "," $(Enumerator) )* ","? #List }
+Enumerator                 = Name {$name "=" $value(ConstantExpression) }?
+
+example Type ~5b21d7 int
+example Type ~5a9005 const char
+example Type ~1134c8 unsigned int
+example Type ~c2a231 unsigned const int
+example Type ~a5944d int[]
+example Type ~6cf979 int[][]
+example Type ~c2d905 '''
+struct Person{
+int id;
+char* name[20];
+int age;
+}
+'''
+example Type ~87c2a8 '''
+enum Kitty { MIMI , YUKI = 5 , RENA } cats;
+'''
+example Type ~bcacc5 '''
+union mydata {
+int i;
+double d;
+char *s;
+};
+'''
+example StructDeclaration ~78c38d struct s{} 
+
+
+// Block, Statement
+//===================
+Block                      = { "{" ( $(Directive) / $(Statement) / $(Declaration) / _ )* "}" #Block }
+Statement                  = Block
+                           / { "if" _ "(" $cond(Expression) ")" $then(Statement) ( "else" _ $else(Statement) )? #If }
+                           / { "switch" _ "(" $cond(Expression) ")" $body(Statement) #Switch }
+                           / { "while" _ "(" $cond(Expression) ")" $body(Statement) #While }
+                           / { "do" _ $body(Statement) "while" _ "(" $cond(Expression) ")" ";" #DoWhile }
+                           / { "for" _ "(" $init(Expression)? ";" $cond(Expression)? ";" $iter(Expression)? ")" $body(Statement) #For }
+                           / { "for" _ "(" $init(Declaration) $cond(Expression)? ";" $iter(Expression)? ")" $body(Statement) #For }
+                           / { "goto" _ $label(Name) ";" #Goto }
+                           / { "continue" _ ";" #Continue }
+                           / { "break" _ ";" #Break }
+                           / { "return" _ $expr(Expression)? ";" #Return }
+                           / { "case" _ $cond(ConstantExpression) ":" ( !"case" !"default" $(Statement) )* #SwitchCase }
+                           / { "default" _ ":" ( !"case" $(Statement) )* #SwitchDefault }
+                           / { $label(Name) ":" #Label }
+                           / TypeDef
+                           / { $expr(Expression) ";" #ExpressionStatement }
+                           / { #Empty } ";"
+example Block ~8909e9 '''
+{
+}
+'''
+example Block ~0038ad '''
+{
+a;
+}
+'''
+example Block ~6bba1c '''
+{
+a;
+a;
+}
+'''
+example Statement ~1591a2 '''
+if(c){
+}
+'''
+example Statement ~fda420 '''
+if(c){
+}
+else{
+}
+'''
+example Statement ~b8c2e3 '''
+while(c){
+}
+'''
+example Statement ~4bf45a '''
+do{
+}
+while(c);
+'''
+example Statement ~d46e74 '''
+for(;;){
+}
+'''
+example Statement ~c350a2 '''
+for(int i = 0;i<1;i++){
+}
+'''
+example Statement ~41aac4 '''
+goto label;
+'''
+example Statement ~d309c9 '''
+return;
+'''
+example Statement ~f26d52 '''
+return 0;
+'''
+example Statement ~03222e '''
+continue;
+'''
+example Statement ~084dd2 '''
+switch(c) {
+case 0:
+	return false;
+case 1:
+	return true;
+}
+'''
+example Statement ~378d31 '''
+switch(c) {
+case 0:
+case 1:
+	return true;
+default:
+	return false;
+}
+'''
+
+//Expression
+//==========
+Expression                 = AssignmentExpression {$ "," $(AssignmentExpression) #Expression }*
+AssignmentExpression       = { $left(UnaryExpression) _AssignmentOperator $right(AssignmentExpression) }
+                           / ConditionalExpression
+_AssignmentOperator        = "=" #Assign
+                           / "*=" #AssignMul
+                           / "/=" #AssignDiv
+                           / "%=" #AssignMod
+                           / "+=" #AssignAdd
+                           / "-=" #AssignSub
+                           / "<<=" #AssignLeftShift
+                           / ">>=" #AssignRightShift
+                           / "&=" #AssignBitwiseAnd
+                           / "^=" #AssignBitwiseXOr
+                           / "|=" #AssignBitwiseOr
+ConstantExpression         = ConditionalExpression
+ConditionalExpression      = LogicalORExpression {$cond "?" $then(Expression) ":" $else(LogicalORExpression) #Trinary }*
+LogicalORExpression        = LogicalANDExpression {$left "||" $right(LogicalANDExpression) #Or }*
+LogicalANDExpression       = InclusiveORExpression {$left "&&" $right(InclusiveORExpression) #And }*
+InclusiveORExpression      = ExclusiveORExpression {$left "|" $right(ExclusiveORExpression) #BitwiseOr }*
+ExclusiveORExpression      = ANDExpression {$left "^" $right(ANDExpression) #BitwiseXor }*
+ANDExpression              = EqualityExpression {$left "&" $right(EqualityExpression) #BitwiseAnd }*
+EqualityExpression         = RelationalExpression {$left ("==" #Equals / "!=" #NotEquals) $right(RelationalExpression) }*
+RelationalExpression       = ShiftExpression {$left ("<=" #LessThanEquals / ">=" #GreaterThanEquals / "<" #LessThan / ">" #GreaterThan) $right(ShiftExpression) }*
+ShiftExpression            = AdditiveExpression {$left ("<<" #LeftShift / ">>" #RightShift) $right(AdditiveExpression) }*
+AdditiveExpression         = MultiplicativeExpression {$left ("+" #Add / "-" #Sub) $right(MultiplicativeExpression) }*
+MultiplicativeExpression   = CastExpression {$left ("*" #Mul / "/" #Div / "%" #Mod) $right(CastExpression) }*
+UnaryExpression            = PostfixExpression
+                           / { "++" $expr(UnaryExpression) #PrefixInc }
+                           / { "--" $expr(UnaryExpression) #PrefixDec }
+                           / { "&" $expr(CastExpression) #Address }
+                           / { "*" $expr(CastExpression) #Star }
+                           / { "+" $expr(CastExpression) #Plus }
+                           / { "-" $expr(CastExpression) #Minus }
+                           / { "~" $expr(CastExpression) #Compl }
+                           / { "!" $expr(CastExpression) #Not }
+                           / { "sizeof" ($expr(UnaryExpression) / "(" $type(Type) ")") #SizeOf }
+CastExpression             = { "(" $type(Type) ")" $expr(CastExpression) #Cast }
+                           / UnaryExpression
+PostfixExpression          = PrimaryExpression {$recv _FunctionCall / _PointerField / _Index / _Field / _Inc / _Dec }*
+_FunctionCall              = $({ "(" _ArgumentExpressionList? ")" #List }) #Apply
+_ArgumentExpressionList    = ($(AssignmentExpression) / $(Type)) ( "," ($(TypeP) / $(AssignmentExpression) / $(Type)) )*
+_Index                     = "[" $(Expression) "]" #Index
+_Field                     = "." $(Name) #Field
+_PointerField              = "->" $(Name) #PointerField
+_Inc                       = "++" #Inc
+_Dec                       = "--" #Dec
+TypeP                      = Name {$ "*" #TPointer }+ &( _ (")" / ",") )
+PrimaryExpression          = Constant
+                           / CString
+                           / "(" Expression ")"
+                           / Name
+
+example Expression ~46f038 x=y
+example Expression ~8e03b0 x+=y
+example Expression ~548f79 x->y
+
+example Expression ~4e09fb c?x:y
+example Expression ~7ac13c x<<y
+example Expression ~9b2696 x>>y
+example Expression ~dea67f x|y
+example Expression ~7f3ecc x&y
+example Expression ~78b953 x^y
+example Expression ~f21916 ~x
+example Expression ~006e0a x&&y
+example Expression ~b60455 x||y
+example Expression ~51b2b2 !x
+
+example Expression ~b0be29 x==y
+example Expression ~f89dae x!=y
+example Expression ~ad9f44 x<y
+example Expression ~37ebeb x<=y
+
+example Expression ~ae662a x+y
+example Expression ~fa8a6a x*y
+
+example Expression ~b89235 ++x
+example Expression ~5f409e x++
+
+example Expression ~8a240d x.f
+example Expression ~af11e0 x.f(y)
+example Expression ~31a0c5 x[y]
+example Expression ~20a347 x.f.z
+example Expression ~792d40 x.f(y).z
+
+example Expression ~3ef58d func()
+example Expression ~c63a4d func(a,b)
+example Expression ~cd52e0 \uAAAA
+
+example Expression ~942075 (int) x
+example Expression ~9e6de4 (int *)malloc(sizeof(int) * 100)
+
+example Expression ~fc3b31 "a"
+example Expression ~9951c9 "a" "b" "c"
+example Expression ~ababc4 'a'
+example Expression ~46dcf5 0123u
+example Expression ~de692c 0xAA
+example Expression ~4ffadc 0xAA.BB
+example Expression ~6653cd 0xAAp10
+example Expression ~1adad1 0x186A0UL
+example Expression ~3b3014 3.14e3
+
+example Expression ~81f9f2 "\\x0a"
+example Expression ~9f41ae "\\n"
+example Expression ~3f5524 "\\0"
+
+
+
+
+//Literal
+//=======
+Constant                   = CFloat
+                           / CInteger
+                           / CChar
+CFloat                     = { (DECIMAL_FLOAT / HEX_FLOAT) #Float } FLOAT_SUFFIX? _
+DECIMAL_FLOAT              = FRACTION EXPONENT?
+                           / DIGIT+ EXPONENT
+FRACTION                   = DIGIT* '.' DIGIT+
+                           / DIGIT+ '.'
+EXPONENT                   = [eE] [+\-]? DIGIT+
+HEX_FLOAT                  = HEX_PREFIX HEX_FRACTION BINARY_EXPONENT?
+                           / HEX_PREFIX HEX+ BINARY_EXPONENT
+HEX_PREFIX                 = '0' [xX]
+HEX_FRACTION               = HEX* '.' HEX+
+                           / HEX+ '.'
+BINARY_EXPONENT            = [pP] [+\-]? DIGIT+
+FLOAT_SUFFIX               = [flFL]
+CInteger                   = { (HEXICAL / DECIMAL / OCTAL) #Integer } INT_SUFFIX? _
+DECIMAL                    = [1-9] DIGIT*
+HEXICAL                    = '0' [xX] ( [0-9] / [A-F] / [a-f] )+
+OCTAL                      = '0' [0-7]*
+INT_SUFFIX                 = [uU] LONG_SUFFIX?
+                           / LONG_SUFFIX [uU]?
+LONG_SUFFIX                = 'll'
+                           / 'LL'
+                           / [lL]
+CString                    = 'L'? ({ $(String) (_ $(String))+ #CString } / String) _
+String                     = '"' { STRING_CONTENT* #String } '"' _
+CChar                      = 'L'? "'" { CHAR_CONTENT* #Character } "'" _
+STRING_CONTENT             = ESCAPE
+                           / &'\\\n' . . / ![\"\n\\] .
+CHAR_CONTENT               = ESCAPE
+                           / !['\n\\] .
+ESCAPE                     = SIMPLE_ESCAPE
+                           / OCTAL_ESCAPE
+                           / HEX_ESCAPE
+                           / UCHAR
+SIMPLE_ESCAPE              = '\\' ['\"?\\abfnrtv]
+OCTAL_ESCAPE               = '\\' [0-7] [0-7]? [0-7]?
+HEX_ESCAPE                 = '\\x' HEX+
+
+// formatted by $ nez format

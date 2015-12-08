@@ -53,6 +53,7 @@ interface JQuery {
 
 interface JQuery {
     tablesorter(): JQuery;
+    smoothScroll(): any;
 }
 
 interface EventTarget{

@@ -11,6 +11,7 @@ var tmp = require('tmp');
 var path = require('path');
 
 var nez_command = config.nez.env + ' java -jar ' + config.nez.path + ' ' + config.nez.option + ' ';
+var konoha_command = config.konoha.env + ' java -jar ' + config.konoha.path + ' ' + config.konoha.option + ' ';
 
 function genResponse(res, j) {
     res.writeHead(200, {'Content-Type': 'application/json'});
@@ -21,6 +22,13 @@ function genResponse(res, j) {
 function createFileAndExec(src_tempfile, source, p4d_tempfile, p4d, command, callback) {
     fs.writeFileSync(src_tempfile, source);
     fs.writeFileSync(p4d_tempfile, p4d);
+    exec(command, (out) => {
+      callback(out);
+    });
+}
+
+function createFileAndExecKonoha(src_tempfile, source, command, callback) {
+    fs.writeFileSync(src_tempfile, source);
     exec(command, (out) => {
       callback(out);
     });
@@ -97,6 +105,38 @@ router.post('/visualize', function(req, res) {
   });
 });
 
+router.post('/konoha', function(req, res) {
+  //dest server is configured by default.yaml
+  var client_body = req.body;
+  console.log(client_body);
+  tmp.file({prefix: 'konoha'}, function(src_err,src_tempfile,fd) {
+    if(src_err) {
+        console.log(src_err);
+        return;
+    }
+    var dest_file = src_tempfile + '_rev.txt'
+    var exec_command = konoha_command + ' ' + src_tempfile + ' > ' + dest_file;
+    console.log(exec_command);
+    console.log(req.body.source);    
+    createFileAndExecKonoha(src_tempfile, req.body.source, exec_command, function(stdout) {
+        var data = fs.readFileSync(dest_file);
+        console.log(data.toString());
+        if(data.length > 0) {
+            var sendData = data.toString();
+            if(sendData){
+              var j = { source: sendData, runnable: true };
+            } else {
+              var j = { source: data.toString(), runnable: false };
+            }
+              genResponse(res, j);
+        } else {
+            var msg = "Error";
+            var error_j = { source: msg, runnable: false };
+            genResponse(res, error_j);
+        }
+    });
+  });
+});
 
 router.post('/dummy/run', function(req, res) {
     console.log(req);

@@ -8,6 +8,7 @@ var VisModelJS;
 var PolymerGestures;
 var pegEditor;
 var inputEditor;
+var konohaEditor;
 var navbarId = ["navbar-overview", "navbar-documents", "navbar-playground"];
 var contentId = ["overview", "documents", "playground"];
 var editorId = ["peg4d", "input", "output"];
@@ -23,6 +24,10 @@ $(function () {
     inputEditor = ace.edit("inputEditor");
     inputEditor.setTheme("ace/theme/xcode");
     inputEditor.getSession().setMode("ace/mode/markdown");
+    inputEditor.setFontSize(12);
+    konohaEditor = ace.edit("konohaEditor");
+    konohaEditor.setTheme("ace/theme/xcode");
+    konohaEditor.getSession().setMode("ace/mode/java");
     inputEditor.setFontSize(12);
     var root = document.getElementById("visualOutput");
     var panel = new VisModelJS.VisualModelPanel(root);
@@ -96,6 +101,13 @@ $(function () {
         console.log(this);
         setP4d($(this).attr("value"), $(this).text());
     });
+    $(".konoha-btn").click(function () {
+        konohaEditor.setValue(inputEditor.getValue());
+        window.scrollTo(window.innerWidth, 0);
+    });
+    $(".nez-btn").click(function () {
+        window.scrollTo(0, 0);
+    });
     setSource();
     pegEditor.on("change", changeEditor);
     inputEditor.on("change", changeEditor);
@@ -131,12 +143,22 @@ function runNez(source, p4d, callback, onerror) {
         error: onerror
     });
 }
+function runKonoha(source, callback, onerror) {
+    $.ajax({
+        type: "POST",
+        url: Config.basePath + "/konoha",
+        data: JSON.stringify({ source: source }),
+        dataType: 'json',
+        contentType: "application/json; charset=utf-8",
+        success: callback,
+        error: onerror
+    });
+}
 function runCallback(e) {
-    var p4d = pegEditor.getValue();
-    var src = inputEditor.getValue();
-    runNez(src, p4d, function (res) {
+    var src = konohaEditor.getValue();
+    runKonoha(src, function (res) {
         console.log(res);
-        $("textarea[name='output']").val(res.source);
+        $(".konoha-result[id='konoha']").text(res.source);
     }, function () {
         console.log("sorry");
     });
@@ -244,7 +266,7 @@ function inputToggle(toId, target, notTarget, id, notFocusId) {
 function setP4d(fileName, displayName) {
     $.ajax({
         type: "GET",
-        url: "./p4d/" + fileName + ".p4d",
+        url: "./p4d/" + fileName + ".nez",
         success: function (res) {
             if (pegEditor != null) {
                 pegEditor.setValue(res);

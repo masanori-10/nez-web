@@ -19,7 +19,29 @@ block loadFiles
   +js('./js/top.js')
 
 block content
-  .container(style="height: 100%")
+  .container-parent(style="height: 100%; width: 100%; left:100%; position: absolute")
+    .container#konoha
+      .row.row-content(id="konoha", style="left:0px;")
+        .header(style="padding-left: 10px; padding-right: 10px;")
+          h2(style="display:inline-block; color: rgb(16, 149, 0)") Try Konoha
+          span.btn.btn-primary(type="button", id="run", style="margin-left:20px; background-color: rgb(16, 149, 0); border-color: rgb(14, 122, 0)") Run
+          i.fa.fa-chevron-circle-left.nez-btn(href="#nez")
+            p.nez-btn-label Nez
+        .input-area.input-area-konoha
+          .collapse-block(id="konoha")
+            .ground-label(id="konoha")
+              span.text(id="konoha") Input Source&nbsp&nbsp&nbsp&nbsp
+                span File:&nbsp&nbsp
+                .fileUploader(style="display: inline")
+                  input.uploader(type="file", id="source", style="margin-left: 142px; margin-top: 2px; height: 30px; width: 94px;")
+                  .btn.btn-default(style="position: relative; padding: 4px 12px;", id="source")
+                    span.glyphicon.glyphicon-folder-open
+                    span.text &nbsp&nbsp&nbspImport
+                  span.txt(style="padding-left: 5px; font-size: 14px; padding-top: 2px; vertical-align: middle") None
+            pre#konohaEditor(name="example", style="height: calc(100% - 40px)")
+        .output-area(style="width: 50%")
+          .collapse-block.konoha-result(style="width: 100%; height: 100%; font-size: 24px; padding: 10px;", id="konoha") konoha
+  .container#nez(style="height: 100%")
     .row(id="topbar")
       //- .title NEZ
     //-   p.title-border.title-border-left
@@ -41,10 +63,12 @@ block content
     //- .row.row-content(id="documents")
     //-   h2 Documents
     .row.row-content(id="playground", style="left:0px;")
-      .header
-        h2(style="display:inline-block") Try Nez
+      .header(style="padding-left: 10px; padding-right: 10px;")
+        h2(style="display:inline-block; color: rebeccapurple") Try Nez
         span.btn.btn-primary(type="button", id="run", style="margin-left:20px;display:none;") Run
         span.btn.btn-info.visualize-btn(style="display:none;") Visualize
+        i.fa.fa-chevron-circle-right.konoha-btn(href="#konoha")
+          p.konoha-btn-label Konoha
       .input-area
         .collapse-block(id="peg4d")
           .ground-label(id="peg4d")
@@ -61,19 +85,17 @@ block content
                       span.glyphicon.glyphicon-folder-open
                       span.text &nbsp&nbsp&nbspImport
                   li(role="presentation")
-                    a(role="menuitem", tabindex="-1", value="c99") C
+                    a(role="menuitem", tabindex="-1", value="c") C
                   li(role="presentation")
-                    a(role="menuitem", tabindex="-1", value="JavaScript") JavaScript
+                    a(role="menuitem", tabindex="-1", value="javaScript4") JavaScript
+                  li(role="presentation")
+                    a(role="menuitem", tabindex="-1", value="konoha") Konoha
                   li(role="presentation")
                     a(role="menuitem", tabindex="-1", value="json") JSON
                   li(role="presentation")
-                    a(role="menuitem", tabindex="-1", value="lua") Lua
-                  li(role="presentation")
-                    a(role="menuitem", tabindex="-1", value="md") Markdown
-                  li(role="presentation")
-                    a(role="menuitem", tabindex="-1", value="xml") XML
-          pre#pegEditor(name="example", style="height: 88%")
-      .input-area
+                    a(role="menuitem", tabindex="-1", value="csv") CSV
+          pre#pegEditor(name="example", style="height: calc(100% - 40px)")
+        .p(style="height: 2%")
         .collapse-block(id="input")
           .ground-label(id="input")
             span.text(id="input") Input Source&nbsp&nbsp&nbsp&nbsp
@@ -84,5 +106,5 @@ block content
                   span.glyphicon.glyphicon-folder-open
                   span.text &nbsp&nbsp&nbspImport
                 span.txt(style="padding-left: 5px; font-size: 14px; padding-top: 2px; vertical-align: middle") None
-          pre#inputEditor(name="example", style="height: 88%")
+          pre#inputEditor(name="example", style="height: calc(100% - 40px)")
       include visual
