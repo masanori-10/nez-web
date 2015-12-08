@@ -103,14 +103,17 @@ $(function () {
     });
     $(".konoha-btn").click(function () {
         konohaEditor.setValue(inputEditor.getValue());
-        window.scrollTo(window.innerWidth, 0);
+        $("html,body").animate({ scrollLeft: window.innerWidth }, 500);
     });
     $(".nez-btn").click(function () {
-        window.scrollTo(0, 0);
+        $("html,body").animate({ scrollLeft: 0 }, 500);
     });
     setSource();
     pegEditor.on("change", changeEditor);
     inputEditor.on("change", changeEditor);
+});
+$(window).on('touchmove.noScroll', function (e) {
+    e.preventDefault();
 });
 $(window).load(function () {
     resizeTextarea();
