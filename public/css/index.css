@@ -258,3 +258,9 @@ i{
 .nez-btn:hover > .nez-btn-label{
   opacity: 1;
 }
+
+.btn-refresh{
+  float: right;
+  padding-top: 7px;
+  cursor: pointer;
+}

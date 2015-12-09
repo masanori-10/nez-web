@@ -52,7 +52,7 @@ router.post('/run', function (req, res) {
                     genResponse(res, j);
                 }
                 else {
-                    var msg = "エラー訂正候補を出せませんでした";
+                    var msg = "";
                     var error_j = { source: msg, runnable: false };
                     genResponse(res, error_j);
                 }
@@ -92,7 +92,7 @@ router.post('/visualize', function (req, res) {
                     genResponse(res, j);
                 }
                 else {
-                    var msg = "エラー訂正候補を出せませんでした";
+                    var msg = "";
                     var error_j = { source: msg, runnable: false };
                     genResponse(res, error_j);
                 }
@@ -127,7 +127,7 @@ router.post('/konoha', function (req, res) {
                 genResponse(res, j);
             }
             else {
-                var msg = "Error";
+                var msg = "";
                 var error_j = { source: msg, runnable: false };
                 genResponse(res, error_j);
             }

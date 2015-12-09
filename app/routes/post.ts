@@ -57,7 +57,7 @@ router.post('/run', function(req, res) {
                 var j = { source: data.toString(), runnable: true };
                 genResponse(res, j);
             } else {
-                var msg = "エラー訂正候補を出せませんでした";
+                var msg = "";
                 var error_j = { source: msg, runnable: false };
                 genResponse(res, error_j);
             }
@@ -96,7 +96,7 @@ router.post('/visualize', function(req, res) {
               }
                 genResponse(res, j);
           } else {
-              var msg = "エラー訂正候補を出せませんでした";
+              var msg = "";
               var error_j = { source: msg, runnable: false };
               genResponse(res, error_j);
           }
@@ -117,7 +117,7 @@ router.post('/konoha', function(req, res) {
     var dest_file = src_tempfile + '_rev.txt'
     var exec_command = konoha_command + ' ' + src_tempfile + ' > ' + dest_file;
     console.log(exec_command);
-    console.log(req.body.source);    
+    console.log(req.body.source);
     createFileAndExecKonoha(src_tempfile, req.body.source, exec_command, function(stdout) {
         var data = fs.readFileSync(dest_file);
         console.log(data.toString());
@@ -130,7 +130,7 @@ router.post('/konoha', function(req, res) {
             }
               genResponse(res, j);
         } else {
-            var msg = "Error";
+            var msg = "";
             var error_j = { source: msg, runnable: false };
             genResponse(res, error_j);
         }

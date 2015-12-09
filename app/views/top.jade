@@ -31,6 +31,7 @@ block content
           .collapse-block(id="konoha")
             .ground-label(id="konoha")
               span.text(id="konoha") Input Source
+              i.fa.fa-refresh.btn-refresh(id="konoha")
             pre#konohaEditor(name="example", style="height: calc(100% - 40px)")
         .output-area(style="width: 50%")
           textarea.konoha-result(style="width: 100%; height: 100%; font-size: 24px; padding: 10px;", id="konoha") Result
@@ -89,6 +90,7 @@ block content
                     a(role="menuitem", tabindex="-1", value="csv") CSV
                   li(role="presentation")
                     a(role="menuitem", tabindex="-1", value="math") Math
+            i.fa.fa-refresh.btn-refresh(id="nez")
           pre#pegEditor(name="example", style="height: calc(100% - 40px)")
         .p(style="height: 2%")
         .collapse-block(id="input")
@@ -101,5 +103,6 @@ block content
                   span.glyphicon.glyphicon-folder-open
                   span.text &nbsp&nbsp&nbspImport
                 span.txt(style="padding-left: 5px; font-size: 14px; padding-top: 2px; vertical-align: middle") None
+            i.fa.fa-refresh.btn-refresh(id="input")
           pre#inputEditor(name="example", style="height: calc(100% - 40px)")
       include visual

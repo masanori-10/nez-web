@@ -108,6 +108,21 @@ $(function () {
     $(".nez-btn").click(function () {
         $("html,body").animate({ scrollLeft: 0 }, 500);
     });
+    $(".btn-refresh").click(function () {
+        var id = $(this).attr("id");
+        console.log(id);
+        if (id == "input") {
+            inputEditor.setValue("");
+        }
+        else if (id == "nez") {
+            pegEditor.setValue("");
+            $("span[id='peg4d'] > .dropdown > button").text("None    ");
+            $("span[id='peg4d'] > .dropdown > button").append("<span class=caret>");
+        }
+        else if (id == "konoha") {
+            konohaEditor.setValue("");
+        }
+    });
     setSource();
     pegEditor.on("change", changeEditor);
     inputEditor.on("change", changeEditor);
@@ -275,7 +290,7 @@ function setP4d(fileName, displayName) {
                 pegEditor.setValue(res);
                 pegEditor.clearSelection();
                 pegEditor.gotoLine(0);
-                $("span[id='peg4d'] > .dropdown > button").text(displayName);
+                $("span[id='peg4d'] > .dropdown > button").text(displayName + "    ");
                 $("span[id='peg4d'] > .dropdown > button").append("<span class=caret>");
             }
         }
