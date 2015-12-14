@@ -19,7 +19,57 @@ block loadFiles
   +js('./js/top.js')
 
 block content
-  .container-parent(style="height: 100%; width: 100%; left:100%; position: absolute")
+  .screen(style="left: 0%;")
+    .container#nez
+      .row.row-content(id="playground", style="left:0px;")
+        .header(style="padding-left: 10px; padding-right: 10px;")
+          h2(style="display:inline-block; color: rebeccapurple") Try Nez
+          i.fa.fa-chevron-circle-right.konoha-btn(href="#konoha")
+            p.konoha-btn-label Konoha
+        .input-area
+          .collapse-block(id="peg4d")
+            .ground-label(id="peg4d")
+              span.text(id="peg4d") Nez Grammar&nbsp&nbsp&nbsp&nbsp
+                .dropdown(style="display: inline")
+                  span File:&nbsp&nbsp
+                  button.btn.btn-default.dropdown-toggle.txt(type="button", data-toggle="dropdown", id="dropdownInput")
+                    |None&nbsp&nbsp
+                    span.caret
+                  ul.dropdown-menu(role="menu", aria-labelledby="dropdownInput")
+                    li.fileUploader(role="presentation", style="display: inline")
+                      input.uploader(type="file", id="p4d", style="height: 30px; width: 158px;")
+                      .importp4d(style="position: relative; padding: 4px 12px;", id="p4d")
+                        span.glyphicon.glyphicon-folder-open
+                        span.text &nbsp&nbsp&nbspImport
+                    li(role="presentation")
+                      a(role="menuitem", tabindex="-1", value="c") C
+                    li(role="presentation")
+                      a(role="menuitem", tabindex="-1", value="javaScript4") JavaScript
+                    li(role="presentation")
+                      a(role="menuitem", tabindex="-1", value="konoha") Konoha
+                    li(role="presentation")
+                      a(role="menuitem", tabindex="-1", value="json") JSON
+                    li(role="presentation")
+                      a(role="menuitem", tabindex="-1", value="csv") CSV
+                    li(role="presentation")
+                      a(role="menuitem", tabindex="-1", value="math") Math
+              i.fa.fa-refresh.btn-refresh(id="nez")
+            pre#pegEditor(name="example", style="height: calc(100% - 40px)")
+          .p(style="height: 2%")
+          .collapse-block(id="input")
+            .ground-label(id="input")
+              span.text(id="input") Input Source&nbsp&nbsp&nbsp&nbsp
+                span File:&nbsp&nbsp
+                .fileUploader(style="display: inline")
+                  input.uploader(type="file", id="source", style="margin-left: 142px; margin-top: 2px; height: 30px; width: 94px;")
+                  .btn.btn-default(style="position: relative; padding: 4px 12px;", id="source")
+                    span.glyphicon.glyphicon-folder-open
+                    span.text &nbsp&nbsp&nbspImport
+                  span.txt(style="padding-left: 5px; font-size: 14px; padding-top: 2px; vertical-align: middle") None
+              i.fa.fa-refresh.btn-refresh(id="input")
+            pre#inputEditor(name="example", style="height: calc(100% - 40px)")
+        include visual
+  .screen(style="left:100%;")
     .container#konoha
       .row.row-content(id="konoha", style="left:0px;")
         .header(style="padding-left: 10px; padding-right: 10px;")
@@ -35,74 +85,3 @@ block content
             pre#konohaEditor(name="example", style="height: calc(100% - 40px)")
         .output-area(style="width: 50%")
           textarea.konoha-result(style="width: 100%; height: 100%; font-size: 24px; padding: 10px;", id="konoha") Result
-  .container#nez(style="height: 100%")
-    .row(id="topbar")
-      //- .title NEZ
-    //-   p.title-border.title-border-left
-    //-   p.title-border.title-border-right
-    //-   .navbar-header(role="navigation")
-    //-     span.navbar-item-filter
-    //-     span.navbar-item(id="navbar-overview")
-    //-       span.navbar-content Overview
-    //-     span.navbar-item(id="navbar-documents")
-    //-       span.navbar-content Documents
-    //-     span.navbar-item(id="navbar-playground")
-    //-       span.navbar-content-active Playground
-    //-   p.title-border.title-border-left
-    //-   p.title-border.title-border-right
-    //- .row.row-content(id="overview")
-    //-   h2 Overview
-    //-   p.content
-    //-     | NEZ is ......
-    //- .row.row-content(id="documents")
-    //-   h2 Documents
-    .row.row-content(id="playground", style="left:0px;")
-      .header(style="padding-left: 10px; padding-right: 10px;")
-        h2(style="display:inline-block; color: rebeccapurple") Try Nez
-        span.btn.btn-primary(type="button", id="run", style="margin-left:20px;display:none;") Run
-        span.btn.btn-info.visualize-btn(style="display:none;") Visualize
-        i.fa.fa-chevron-circle-right.konoha-btn(href="#konoha")
-          p.konoha-btn-label Konoha
-      .input-area
-        .collapse-block(id="peg4d")
-          .ground-label(id="peg4d")
-            span.text(id="peg4d") Nez Grammar&nbsp&nbsp&nbsp&nbsp
-              .dropdown(style="display: inline")
-                span File:&nbsp&nbsp
-                button.btn.btn-default.dropdown-toggle.txt(type="button", data-toggle="dropdown", id="dropdownInput")
-                  |None&nbsp&nbsp
-                  span.caret
-                ul.dropdown-menu(role="menu", aria-labelledby="dropdownInput")
-                  li.fileUploader(role="presentation", style="display: inline")
-                    input.uploader(type="file", id="p4d", style="height: 30px; width: 158px;")
-                    .importp4d(style="position: relative; padding: 4px 12px;", id="p4d")
-                      span.glyphicon.glyphicon-folder-open
-                      span.text &nbsp&nbsp&nbspImport
-                  li(role="presentation")
-                    a(role="menuitem", tabindex="-1", value="c") C
-                  li(role="presentation")
-                    a(role="menuitem", tabindex="-1", value="javaScript4") JavaScript
-                  li(role="presentation")
-                    a(role="menuitem", tabindex="-1", value="konoha") Konoha
-                  li(role="presentation")
-                    a(role="menuitem", tabindex="-1", value="json") JSON
-                  li(role="presentation")
-                    a(role="menuitem", tabindex="-1", value="csv") CSV
-                  li(role="presentation")
-                    a(role="menuitem", tabindex="-1", value="math") Math
-            i.fa.fa-refresh.btn-refresh(id="nez")
-          pre#pegEditor(name="example", style="height: calc(100% - 40px)")
-        .p(style="height: 2%")
-        .collapse-block(id="input")
-          .ground-label(id="input")
-            span.text(id="input") Input Source&nbsp&nbsp&nbsp&nbsp
-              span File:&nbsp&nbsp
-              .fileUploader(style="display: inline")
-                input.uploader(type="file", id="source", style="margin-left: 142px; margin-top: 2px; height: 30px; width: 94px;")
-                .btn.btn-default(style="position: relative; padding: 4px 12px;", id="source")
-                  span.glyphicon.glyphicon-folder-open
-                  span.text &nbsp&nbsp&nbspImport
-                span.txt(style="padding-left: 5px; font-size: 14px; padding-top: 2px; vertical-align: middle") None
-            i.fa.fa-refresh.btn-refresh(id="input")
-          pre#inputEditor(name="example", style="height: calc(100% - 40px)")
-      include visual
