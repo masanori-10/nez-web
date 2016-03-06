@@ -12,7 +12,11 @@ nez:
     path: './nez/nez.jar'
     option: 'parse'
     env: ''
-konoha:
-    path: './konoha/konoha.jar'
-    option: ''
+bxnez:
+    path: '../nez/nez.jar'
+    option: 'nez.bx.CGenerate'
+    env: ''
+format:
+    path: '../nez/nez.jar'
+    option: 'nez.bx.CFormat'
     env: ''

@@ -11,7 +11,8 @@ var tmp = require('tmp');
 var path = require('path');
 
 var nez_command = config.nez.env + ' java -jar ' + config.nez.path + ' ' + config.nez.option + ' ';
-var konoha_command = config.konoha.env + ' java -jar ' + config.konoha.path + ' ' + config.konoha.option + ' ';
+var bxnez_command = config.bxnez.env + ' java -jar ' + config.bxnez.path + ' ' + config.bxnez.option + ' ';
+var format_command = config.format.env + ' java -jar ' + config.format.path + ' ' + config.format.option + ' ';
 
 function genResponse(res, j) {
     res.writeHead(200, {'Content-Type': 'application/json'});
@@ -105,20 +106,20 @@ router.post('/visualize', function(req, res) {
   });
 });
 
-router.post('/konoha', function(req, res) {
+router.post('/bxnez', function(req, res) {
   //dest server is configured by default.yaml
   var client_body = req.body;
   console.log(client_body);
-  tmp.file({prefix: 'konoha'}, function(src_err,src_tempfile,fd) {
-    if(src_err) {
-        console.log(src_err);
+  tmp.file({prefix: 'bxnez'}, function(p4d_err,p4d_tempfile,fd) {
+    if(p4d_err) {
+        console.log(p4d_err);
         return;
     }
-    var dest_file = src_tempfile + '_rev.txt'
-    var exec_command = konoha_command + ' ' + src_tempfile + ' > ' + dest_file;
+    var dest_file = p4d_tempfile + '_rev.txt'
+    var exec_command = bxnez_command + ' -g ' + p4d_tempfile + ' > ' + dest_file;
     console.log(exec_command);
     console.log(req.body.source);
-    createFileAndExecKonoha(src_tempfile, req.body.source, exec_command, function(stdout) {
+    createFileAndExecKonoha(p4d_tempfile, req.body.source, exec_command, function(stdout) {
         var data = fs.readFileSync(dest_file);
         console.log(data.toString());
         if(data.length > 0) {
