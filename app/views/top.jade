@@ -23,9 +23,9 @@ block content
     .container#nez
       .row.row-content(id="playground", style="left:0px;")
         .header(style="padding-left: 10px; padding-right: 10px;")
-          h2(style="display:inline-block; color: rebeccapurple") Try Nez
-          i.fa.fa-chevron-circle-right.konoha-btn(href="#konoha")
-            p.konoha-btn-label Konoha
+          h2(style="display:inline-block; color: rgb(102,51,153)") Try Nez
+          i.fa.fa-chevron-circle-right.konoha-btn(href="bxnez")
+            p.konoha-btn-label bxnez
         .input-area
           .collapse-block(id="peg4d")
             .ground-label(id="peg4d")
@@ -70,17 +70,18 @@ block content
             pre#inputEditor(name="example", style="height: calc(100% - 40px)")
         include visual
   .screen(style="left:100%;")
-    .container#konoha
-      .row.row-content(id="konoha", style="left:0px;")
+    .container#bxnez
+      .row.row-content(id="bxnez", style="left:0px;")
         .header(style="padding-left: 10px; padding-right: 10px;")
-          h2(style="display:inline-block; color: rgb(16, 149, 0)") Try Konoha
-          span.btn.btn-primary(type="button", id="run", style="margin-left:20px; background-color: rgb(16, 149, 0); border-color: rgb(14, 122, 0)") Run
+          h2(style="display:inline-block; color: rgb(102, 153, 51)") Try bxnez
+          span.btn.btn-primary(type="button", id="generate", style="margin-left:20px; background-color: rgb(0, 0, 200); border-color: rgb(0, 0, 100)") Generate
+          span.btn.btn-primary(type="button", id="format", style="margin-left:20px; background-color: rgb(0, 200, 0); border-color: rgb(0, 100, 0)") Format
           i.fa.fa-chevron-circle-left.nez-btn(href="#nez")
             p.nez-btn-label Nez
         .input-area.input-area-konoha
           .collapse-block(id="konoha")
             .ground-label(id="konoha")
-              span.text(id="konoha") Input Source
+              span.text(id="konoha") bxnez format set
               i.fa.fa-refresh.btn-refresh(id="konoha")
             pre#konohaEditor(name="example", style="height: calc(100% - 40px)")
         .output-area(style="width: 50%")

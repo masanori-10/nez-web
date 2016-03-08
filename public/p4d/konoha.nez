@@ -86,7 +86,6 @@ TODO                               = !''
 "const"                            = 'const' !W _
 "continue"                         = 'continue' !W _
 "default"                          = 'default' !W _
-"defined"                          = 'defined' !W _
 "do"                               = 'do' !W _
 "double"                           = 'double' !W _
 "else"                             = 'else' !W _
@@ -108,14 +107,17 @@ TODO                               = !''
 "interface"                        = 'interface' !W _
 "let"                              = 'let' !W _
 "long"                             = 'long' !W _
+"native"                           = 'native' !W _
 "new"                              = 'new' !W _
 "null"                             = 'null' !W _
+"package"                          = 'package' !W _
 "private"                          = 'private' !W _
 "protected"                        = 'protected' !W _
 "public"                           = 'public' !W _
 "return"                           = 'return' !W _
 "short"                            = 'short' !W _
 "static"                           = 'static' !W _
+"strictfp"                         = 'strictfp' !W _
 "super"                            = 'super' !W _
 "switch"                           = 'switch' !W _
 "synchronized"                     = 'synchronized' !W _
@@ -125,9 +127,8 @@ TODO                               = !''
 "transient"                        = 'transient' !W _
 "true"                             = 'true' !W _
 "try"                              = 'try' !W _
-"typeof"                           = 'typeof' !W _
-"var"                              = 'var' !W _
 "void"                             = 'void' !W _
+"volatile"                         = 'volatile' !W _
 "while"                            = 'while' !W _
 
 KEYWORD                            = "abstract"
@@ -160,32 +161,37 @@ KEYWORD                            = "abstract"
                                    / "interface"
                                    / "int"
                                    / "long"
+                                   / "native"
                                    / "new"
                                    / "null"
+                                   / "package"
                                    / "private"
                                    / "protected"
                                    / "public"
                                    / "return"
                                    / "short"
                                    / "static"
+                                   / "strictfp"
                                    / "super"
                                    / "switch"
                                    / "synchronized"
                                    / "this"
                                    / "throws"
                                    / "throw"
+                                   / "transient"
                                    / "true"
                                    / "try"
                                    / "void"
+                                   / "volatile"
                                    / "while"
 
 /* Annotation */
 Modifiers                          = { $(Annotation)+ #Modifiers }
-Annotation                         = "@" { $(QualifiedName) "(" $(ElementValuePairList)? ")" #Annotation }
-                                   / "@" { $(QualifiedName) "(" $(ElementValue) ")" #Annotation }
-                                   / "@" { $(QualifiedName) #Annotation }
+Annotation                         = "@" { $name(QualifiedName) "(" $list(ElementValuePairList)? ")" #Annotation }
+                                   / "@" { $name(QualifiedName) "(" $value(ElementValue) ")" #Annotation }
+                                   / "@" { $name(QualifiedName) #Annotation }
 ElementValuePairList               = { $(ElementValuePair) ( "," $(ElementValuePair) )* #CommaList }
-ElementValuePair                   = { $(Identifier) "=" $(ElementValue) #KeyValue }
+ElementValuePair                   = { $name(Identifier) "=" $value(ElementValue) #KeyValue }
 ElementValue                       = ElementValueArrayInitializer
                                    / ConditionalExpression
                                    / Annotation
@@ -202,21 +208,20 @@ Declaration                        = ImportDeclaration
                                    / ClassDeclaration
                                    / EnumDeclaration
                                    / FunctionDeclaration
-                                   / InterfaceDeclaration
                                    / VariableDeclaration EOS
 
 // import
 ImportDeclaration                  = { "import" $name(PackageName) #Import } EOS
-PackageName                        = QualifiedName {$ "." "*" #WildCardName }?
+PackageName                        = QualifiedName {$base "." "*" #WildCardName }?
 
 // class
-ClassDeclaration                   = { $anno(Modifiers)? "class" $name(Identifier) $_(TypeParameters)? $super(SuperClass)? $impl(SuperInterfaces)? $body(ClassBody) #ClassDecl }
+ClassDeclaration                   = { $anno(Modifiers)? "class" $name(Identifier) $param(TypeParameters)? $super(SuperClass)? $impl(SuperInterfaces)? $body(ClassBody) #ClassDecl }
 SuperClass                         = "extends" ClassType
 SuperInterfaces                    = "implements" ClassTypes
 ClassBody                          = "{" { $(ClassBodyDeclaration)* #Block } "}"
 ClassBodyDeclaration               = ClassMemberDeclaration
-                                   / TODO { $(Block) #InstanceInisializer }
-                                   / TODO "static" { $(Block) #StaticInitializer }
+                                   / TODO { $block(Block) #InstanceInisializer }
+                                   / TODO "static" { $block(Block) #StaticInitializer }
                                    / ConstructorDeclaration
 
 ClassMemberDeclaration             = FieldDeclaration
@@ -226,7 +231,7 @@ ClassMemberDeclaration             = FieldDeclaration
                                    / EOS+ { #Empty }
 
 //interface, annotation type
-InterfaceDeclaration               = { $anno(Modifiers)? "interface" $name(Identifier) $_(TypeParameters)? $super(SuperClass)? $body(InterfaceBody) #InterfaceDecl }
+InterfaceDeclaration               = { $anno(Modifiers)? "interface" $name(Identifier) $param(TypeParameters)? $super(SuperClass)? $body(InterfaceBody) #InterfaceDecl }
 ExtendsInterfaces                  = "extends" ClassTypes
 InterfaceBody                      = "{" { $(InterfaceMemberDeclaration)* #Block } "}"
 InterfaceMemberDeclaration         = InterfaceMethodDeclaration
@@ -264,7 +269,8 @@ interface C {
 '''
 
 // enum
-EnumDeclaration                    = { $anno(Modifiers)? "enum" $name(Identifier) $impl(SuperInterfaces)* $body(EnumBody) #EnumDecl }
+EnumDeclaration                    = { $anno(Modifiers)? "enum" $name(Identifier) $impl(SuperInterfacesList) $body(EnumBody) #EnumDecl }
+SuperInterfacesList                = { $(SuperInterfaces)* #List }
 EnumBody                           = "{" { ($(Enumerator) ( "," $(Enumerator) )* )? ","? ";"? #List } "}"
 Enumerator                         = { $anno(Modifiers)? $name(Identifier) #Enum }
 
@@ -275,8 +281,7 @@ enum C {
 '''
 
 //local variable
-VariableDeclaration                = { "var" $name(Identifier) (":" $type(Type))? ( "=" $expr(Expression) )? #VarDecl }
-                                   / { $anno(Modifiers)? $type(Type) $name(VarName) !"," ( "=" $expr(Expression) )? !"," #VarDecl }
+VariableDeclaration                = { $anno(Modifiers)? $type(Type) $name(VarName) !"," ( "=" $expr(Expression) )? !"," #VarDecl }
                                    / { $anno(Modifiers)? $type(Type) $list(InitDeclList) #MultiVarDecl }
 InitDeclList                       = { $(InitDecl) ( "," $(InitDecl) )* #List }
 InitDecl                           = { $name(VarName) ( "=" $expr(Expression) )? #VarDecl }
@@ -310,32 +315,32 @@ String[][] names = {
 FieldDeclaration                   = { $anno(Modifiers)? $type(Type) $list(InitDeclList) #FieldDecl } EOS
 
 //method
-MethodDeclaration                  = { $anno(Modifiers)? ( $(TypeParameters) $anno(Modifiers)? )? $type(TypeOrVoid) $name(Identifier) "(" $param(ParamList) ")" $throws(Throws)? ($body(Block) / EOS) #MethodDecl }
-InterfaceMethodDeclaration         = { $anno(Modifiers)? ( $(TypeParameters) $anno(Modifiers)? )? $type(TypeOrVoid) $name(Identifier) "(" $param(ParamList) ")" $throws(Throws)? ($body(Block) / EOS) #InterfaceMethodDecl }
+MethodDeclaration                  = { $anno(Modifiers)? ( $param(TypeParameters) $anno2(Modifiers)? )? $type(TypeOrVoid) $name(Identifier) "(" $param2(ParamList) ")" $throws(Throws)? ($body(Block) / EOS) #MethodDecl }
+InterfaceMethodDeclaration         = { $anno(Modifiers)? ( $param(TypeParameters) $anno2(Modifiers)? )? $type(TypeOrVoid) $name(Identifier) "(" $param2(ParamList) ")" $throws(Throws)? ($body(Block) / EOS) #MethodDecl }
 ParamList                          = { ( $(MethodParam) "," )* $(VarParam) #List }
                                    / { ( $(MethodParam) ( "," $(MethodParam) )* )? #List }
 MethodParam                        = { $anno(Modifiers)? $type(Type) $name(VarName) #Param }
                                    / { $name(Identifier) (":" $type(Type) )? #Param }
-VarParam                           = { $anno(Modifiers)? $(Type) "..." $(VarName) #VarParam }
-Throws                             = "throws" { $(ClassTypes) #Throws }
+VarParam                           = { $anno(Modifiers)? $type(Type) "..." $name(VarName) #VarParam }
+Throws                             = "throws" { $type(ClassTypes) #Throws }
 
 //constructor
 ConstructorDeclaration             = { $anno(Modifiers)? $type(ReferenceType) "(" $param(ParamList) ")" $throws(Throws)? $body(ConstructorBody) #Constructor }
 ConstructorBody                    = "{" { $(ExplicitConstructorInvocation)? ( $(Statement) / $(Declaration) )* #Block } "}"
-ExplicitConstructorInvocation      = { $(TypeArguments)? $({ $(This) "(" _ArgumentExpressionList? ")" #List }) #ExplicitConstructorInvocation } EOS
-                                   / { $(TypeArguments)? $({ $(Super) "(" _ArgumentExpressionList? ")" #List }) #ExplicitConstructorInvocation } EOS
-                                   / { $(PostfixExpression) "." $(TypeArguments)? $(Super) $({ "(" _ArgumentExpressionList? ")" #List }) #ExplicitConstructorInvocation } EOS
+ExplicitConstructorInvocation      = { $arg(TypeArguments)? $list({ $this(This) $list(ArgumentExpressionList) #ThisList }) #ExplicitConstructorInvocation } EOS
+                                   / { $arg(TypeArguments)? $list({ $super(Super) $list(ArgumentExpressionList) #SuperList }) #ExplicitConstructorInvocation } EOS
+                                   / { $post(PostfixExpression) "." $arg(TypeArguments)? $super(Super) $list(ArgumentExpressionList) #ExplicitConstructorInvocation } EOS
 
 //
 FunctionDeclaration                = { $anno(Modifiers)? "function" $name(Identifier) "(" $param(ParamList) ")" $type(":" TypeOrVoid)? $body(Block) #FuncDecl }
-                                   / { "let" $name(Identifier) $param(ParamList) "=" $body(LambdaBody) #FuncDecl}
-                                   / { $anno(Modifiers)? ( $(TypeParameters) $anno(Modifiers)? )? $type(TypeOrVoid) $name(Identifier) "(" $param(ParamList) ")" $throws(Throws)? ($body(Block) / EOS) #FuncDecl }
+                                   / { "let" $name(Identifier) $param(ParamList) "=" $lbody(LambdaBody) #FuncDecl}
+                                   / { $anno(Modifiers)? ( $param(TypeParameters) $anno2(Modifiers)? )? $type(TypeOrVoid) $name(Identifier) "(" $param2(ParamList) ")" $throws(Throws)? ($body(Block) / EOS) #FuncDecl }
 
 // Lambda
 LambdaExpression                   = { "function" $name(Identifier)? "(" $param(ParamList) ")" $type(":" TypeOrVoid)? $body(Block) #Lambda }
                                    / { $param(LambdaParameters) "->" $body(LambdaBody) #Lambda }
 LambdaParameters                   = Identifier / "(" ParamList ")"
-LambdaBody                         = !'{' { $(LambdaReturn) #Block}
+LambdaBody                         = !'{' { $return(LambdaReturn) #Block}
                                    / Block
 LambdaReturn                       = { $expr(Expression) #Return }
 
@@ -361,10 +366,9 @@ function fibo(n) {
 '''
 
 /* Types, Values, Variables */
-Type                               = "typeof" "(" { $expr(Expression) #TypeOf } ")"
-                                   / ReferenceType
+Type                               = ReferenceType
                                    / PrimitiveType
-PrimitiveType                      = { $anno(Modifiers) $(UnannoPrimitiveType) #Annotated }
+PrimitiveType                      = { $anno(Modifiers) $type(UnannoPrimitiveType) #Annotated }
                                    / UnannoPrimitiveType
 UnannoPrimitiveType                = NumericType
                                    / BooleanType
@@ -385,15 +389,16 @@ ArrayType                          = (PrimitiveType / ClassType / TypeVariable) 
 
 ClassType                          = QualifiedName {$base $param(TypeArguments) #GenericType }?
 
-TypeVariable                       = { $anno(Modifiers) $(Identifier) #Annotated }
+TypeVariable                       = { $anno(Modifiers) $name(Identifier) #Annotated }
                                    / Identifier
-TypeParameter                      = { $anno(Modifiers) $(UnannoTypeParameter) #Annotated }
+TypeParameter                      = { $anno(Modifiers) $param(UnannoTypeParameter) #Annotated }
                                    / UnannoTypeParameter
-UnannoTypeParameter                = Identifier {$base "extends" $extends(ClassType) ( "&" $(ClassType) )* #TypeBound }?
+UnannoTypeParameter                = Identifier {$base "extends" $extends(ClassType) $list(ClassTypeList) #TypeBound }?
+ClassTypeList                      = { ( "&" $(ClassType) )* #List }
 TypeParameters                     = { "<" $(TypeParameter) ( "," $(TypeParameter) )* ">" #TypeLists }
 TypeArguments                      = { "<" ( $(TypeArgument) ( "," $(TypeArgument) )* )? ">" #TypeArguments }
 TypeArgument                       = TypeOrVoid
-                                   / { $anno(Modifiers)? "?" #TWildCard } {$ ("extends" #UpperBound / "super" #LowerBound) $(ReferenceType) }?
+                                   / { $anno(Modifiers)? "?" #TWildCard } {$base ("extends" #UpperBound / "super" #LowerBound) $type(ReferenceType) }?
 Void                               = { 'void' !W #VoidType } _
 TypeOrVoid                         = Type
                                    / Void
@@ -428,7 +433,6 @@ Map<K,V>[]
 
 // Block, Statement
 //===================
-
 EOS                                = ";" / &'}' / [ \t]* EOL _
 Block                              = "{" { ( $(Statement) / $(LocalDeclaration) )* #Block } "}"
 LocalDeclaration                   = VariableDeclaration EOS
@@ -440,8 +444,8 @@ Statement                          = Block
                                    / SwitchStatement
                                    / { "while" "(" $cond(Expression) ")" $body(Statement) #While }
                                    / { "do" $body(Statement) "while" "(" $cond(Expression) ")"  #DoWhile } EOS
-                                   / { "for" "(" $init(Expression)? ";" $cond(Expression)? ";" $iter(Expression)? ")" $body(Statement) #For }
-                                   / { "for" "(" $init(VariableDeclaration) ";" $cond(Expression)? ";" $iter(Expression)? ")" $body(Statement) #For }
+                                   / { "for" "(" $init(Expressions)? ";" $cond(Expression)? ";" $iter(Expressions)? ")" $body(Statement) #For }
+                                   / { "for" "(" $init(VariableDeclaration) ";" $cond(Expression)? ";" $iter(Expressions)? ")" $body(Statement) #For }
                                    / { "for" "(" $anno(Modifiers)? ($type(Type) !"in" $name(Identifier) / $name(Identifier) ) ( ":" / "in" ) $iter(Expression) ")" $body(Statement) #ForEach }
                                    / { "continue" $label(Identifier)? #Continue `` } EOS
                                    / { "break" $label(Identifier)? #Break `` } EOS
@@ -450,7 +454,7 @@ Statement                          = Block
                                    / { "throw" $expr(Expression) #Throw } EOS
                                    / "synchronized" { "(" $cond(Expression) ")" $body(Block) #Synchronized }
                                    / { $label(Identifier) ":" #Label }
-                                   / Expression EOS
+                                   / { $expr(Expression) #Expression } EOS
                                    / EOS+ { #Empty }
 
 example Block ~783b5 '''
@@ -600,7 +604,6 @@ default:
 /* Expression */
 Expressions                        = { $(Expression) ( "," $(Expression) )* #List }
 Expression                         = LambdaExpression
-                                   / "typeof" "(" { $expr(Expression) #TypeOf } ")"
                                    / AssignmentExpression
 AssignmentExpression               = { $left(UnaryExpression) _AssignmentOperator $right(Expression) }
                                    / ConditionalExpression
@@ -650,10 +653,9 @@ UnaryExpression                    = PostfixExpression
                                    / { "!" $expr(CastNewExpression) #Not }
 
 PostfixExpression                  = PrimaryExpression {$recv _MethodCall / _Index / _Field / _Inc / _Dec }*
-_MethodCall                        = "." $(TypeArguments)? $name(Identifier) $param(ArgumentExpressionList) #MethodApply
-ArgumentExpressionList             = { "(" _ArgumentExpressionList? ")" #List }
-_ArgumentExpressionList           = $(Expression) ( "," $(Expression) )*
-_Index                             = "[" $param({ $(Expression) #List}) "]" #Indexer
+_MethodCall                        = "." $arg(TypeArguments)? $name(Identifier) $param(ArgumentExpressionList) #MethodApply
+ArgumentExpressionList             = { "(" ( $(Expression) ( "," $(Expression) )* )? ")" #List }
+_Index                             = "[" $param({ $exp(Expression) #List}) "]" #Indexer
 _Field                             = "." $name(Identifier) !'(' #Field
 _Inc                               = "++" #Inc
 _Dec                               = "--" #Dec
@@ -671,8 +673,8 @@ This                               = { "this" #This `` }
 Super                              = { "super" #Super `` }
 MethodInvocationExpression         = { $name(Identifier) $param(ArgumentExpressionList) #Apply }
 InstanceCreationExpression         = { "new" $type(ClassType) $param(ArgumentExpressionList) $body(ClassBody)? #New }
-ArrayCreationExpression            = { "new" $type(NonArrayType {$base "[" $size(Expression) "]" #ArrayType }+ {$ "[" "]" #ArrayType }*) #NewArray }
-                                   / { "new" $type(NonArrayType {$base "[" "]" #ArrayType }+) $(ArrayLiteral) #NewArray }
+ArrayCreationExpression            = { "new" $type(NonArrayType {$base "[" $size(Expression) "]" #ArrayType }+ {$base "[" "]" #ArrayType }*) #NewArray }
+                                   / { "new" $type(NonArrayType {$base "[" "]" #ArrayType }+) $literal(ArrayLiteral) #NewArray }
 
 example Expression ~46f038 x=y
 example Expression ~8e03b0 x+=y
@@ -734,8 +736,9 @@ PropertyName                       = StringLiteral
                                    / Identifier
 
 TripleLiteral                      = '\'\'\'' { $(TripleContent)* #Interpolation } '\'\'\''
-TripleContent                      = '${' Expression '}'
-                                   / '$[' Expression ']'
+TripleContent                      =
+/* '${' Expression '}'
+                                   /*/ '$[' Expression ']'
                                    / { (!'\'\'\'' !'${' !'$[' .)* #Text }
 
 example TripleLiteral&Expression ~6828079 ```

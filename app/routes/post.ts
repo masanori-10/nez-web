@@ -11,8 +11,9 @@ var tmp = require('tmp');
 var path = require('path');
 
 var nez_command = config.nez.env + ' java -jar ' + config.nez.path + ' ' + config.nez.option + ' ';
-var bxnez_command = config.bxnez.env + ' java -jar ' + config.bxnez.path + ' ' + config.bxnez.option + ' ';
+var generate_command = config.generate.env + ' java -jar ' + config.generate.path + ' ' + config.generate.option + ' ';
 var format_command = config.format.env + ' java -jar ' + config.format.path + ' ' + config.format.option + ' ';
+var check_command = config.check.env + ' java -jar ' + config.check.path + ' ' + config.check.option + ' ';
 
 function genResponse(res, j) {
     res.writeHead(200, {'Content-Type': 'application/json'});
@@ -28,23 +29,32 @@ function createFileAndExec(src_tempfile, source, p4d_tempfile, p4d, command, cal
     });
 }
 
-function createFileAndExecKonoha(src_tempfile, source, command, callback) {
-    fs.writeFileSync(src_tempfile, source);
+function createFileAndExecGenerate(p4d_tempfile, p4d, command, callback) {
+    fs.writeFileSync(p4d_tempfile, p4d);
     exec(command, (out) => {
       callback(out);
     });
+}
+
+function createFileAndExecFormat(src_tempfile, source, p4d_tempfile, p4d, bx_tempfile, bxnez, command, callback) {
+  fs.writeFileSync(src_tempfile, source);
+  fs.writeFileSync(p4d_tempfile, p4d);
+  fs.writeFileSync(bx_tempfile, bxnez);
+  exec(command, (out) => {
+    callback(out);
+  });
 }
 
 router.post('/run', function(req, res) {
     //dest server is configured by default.yaml
     var client_body = req.body;
     console.log(client_body);
-    tmp.file({prefix: 'nez', postfix: '.p4d'}, function(p4d_err,p4d_tempfile,fd) {
+    tmp.file({prefix: 'nez', postfix: '.nez'}, function(p4d_err,p4d_tempfile,fd) {
       if(p4d_err) {
           console.log(p4d_err);
           return;
       }
-      tmp.file({prefix: 'nez'}, function(src_err,src_tempfile,fd) {
+      tmp.file({prefix: 'nez', postfix: '.txt'}, function(src_err,src_tempfile,fd) {
       if(src_err) {
           console.log(src_err);
           return;
@@ -76,7 +86,7 @@ router.post('/visualize', function(req, res) {
         console.log(p4d_err);
         return;
     }
-    tmp.file({prefix: 'nez'}, function(src_err,src_tempfile,fd) {
+    tmp.file({prefix: 'nez', postfix: '.txt'}, function(src_err,src_tempfile,fd) {
     if(src_err) {
         console.log(src_err);
         return;
@@ -106,20 +116,20 @@ router.post('/visualize', function(req, res) {
   });
 });
 
-router.post('/bxnez', function(req, res) {
+router.post('/generate', function(req, res) {
   //dest server is configured by default.yaml
   var client_body = req.body;
   console.log(client_body);
-  tmp.file({prefix: 'bxnez'}, function(p4d_err,p4d_tempfile,fd) {
+  tmp.file({prefix: 'nez'}, function(p4d_err,p4d_tempfile,fd) {
     if(p4d_err) {
         console.log(p4d_err);
         return;
     }
     var dest_file = p4d_tempfile + '_rev.txt'
-    var exec_command = bxnez_command + ' -g ' + p4d_tempfile + ' > ' + dest_file;
+    var exec_command = generate_command + ' -g ' + p4d_tempfile + ' > ' + dest_file;
     console.log(exec_command);
     console.log(req.body.source);
-    createFileAndExecKonoha(p4d_tempfile, req.body.source, exec_command, function(stdout) {
+    createFileAndExecGenerate(p4d_tempfile, req.body.p4d, exec_command, function(stdout) {
         var data = fs.readFileSync(dest_file);
         console.log(data.toString());
         if(data.length > 0) {
@@ -135,6 +145,51 @@ router.post('/bxnez', function(req, res) {
             var error_j = { source: msg, runnable: false };
             genResponse(res, error_j);
         }
+    });
+  });
+});
+
+router.post('/format', function(req, res) {
+  //dest server is configured by default.yaml
+  var client_body = req.body;
+  console.log(client_body);
+  tmp.file({prefix: 'nez'}, function(p4d_err,p4d_tempfile,fd) {
+    if(p4d_err) {
+        console.log(p4d_err);
+        return;
+    }
+    tmp.file({prefix: 'format'}, function(src_err,src_tempfile,fd) {
+      if(src_err) {
+        console.log(src_err);
+        return;
+    }
+    tmp.file({prefix: 'bxnez'}, function(bx_err,bx_tempfile,fd) {
+      if(bx_err) {
+        console.log(bx_err);
+        return;
+    }
+    var dest_file = p4d_tempfile + '_rev.txt'
+    var exec_command = format_command + ' -g ' + p4d_tempfile + ' ' + src_tempfile + ' -b ' + bx_tempfile + ' > ' + dest_file;
+    console.log(exec_command);
+    console.log(req.body.source);
+    createFileAndExecFormat(src_tempfile, req.body.source, p4d_tempfile, req.body.p4d, bx_tempfile, req.body.bxnez , exec_command, function(stdout) {
+        var data = fs.readFileSync(dest_file);
+        console.log(data.toString());
+        if(data.length > 0) {
+            var sendData = data.toString();
+            if(sendData){
+              var j = { source: sendData, runnable: true };
+            } else {
+              var j = { source: data.toString(), runnable: false };
+            }
+              genResponse(res, j);
+        } else {
+            var msg = "";
+            var error_j = { source: msg, runnable: false };
+            genResponse(res, error_j);
+        }
+        });
+      });
     });
   });
 });

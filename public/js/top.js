@@ -1,8 +1,3 @@
-///<reference path="../../typings/jquery/jquery.d.ts" />
-///<reference path="../../typings/jquery/jquery_plugins.d.ts" />
-///<reference path="../../typings/ace/ace.d.ts" />
-///<reference path="../../typings/vmjs/vmjs.d.ts" />
-///<reference path='../../typings/config/config.d.ts'/>
 var createNodeViewFromP4DJson;
 var VisModelJS;
 var PolymerGestures;
@@ -16,7 +11,6 @@ var inputFocus = "both";
 var setEditorId = [];
 var reader = new FileReader();
 $(function () {
-    // 初期化
     pegEditor = ace.edit("pegEditor");
     pegEditor.setTheme("ace/theme/xcode");
     pegEditor.getSession().setMode("ace/mode/c_cpp");
@@ -32,9 +26,6 @@ $(function () {
     var root = document.getElementById("visualOutput");
     var panel = new VisModelJS.VisualModelPanel(root);
     var TopNode = createNodeViewFromP4DJson({ "": "" });
-    /*$("#" + contentId[2]).css({left: "0px"});
-    $("#" + navbarId[2] + " > span").attr("class", "navbar-content-active");*/
-    //
     $(window).resize(function () {
         var width = $(window).width();
         var sidebarW = $('.sidebar-right').width();
@@ -46,7 +37,6 @@ $(function () {
         var num;
         var hiddenLeft = "-" + ($(window).width() + 1200) + "px";
         for (var i = 0; i < navbarId.length; i++) {
-            //var transitionTime = Number($("#" + contentId[i]).css("transition").split(" ")[1].replace("s", "")) * 1000 + 100;
             if (id == navbarId[i]) {
                 $("#" + contentId[i]).css({ left: "0", opacity: 1 });
                 $("#" + navbarId[i] + " > span").attr("class", "navbar-content-active");
@@ -57,7 +47,6 @@ $(function () {
                 $("#" + navbarId[i] + " > span").attr("class", "navbar-content");
             }
         }
-        //if Playground, Title "NEZ" is hidden
         if (num == 2) {
             $(".container").css({ top: "-91px", height: "100%" });
         }
@@ -65,44 +54,14 @@ $(function () {
             $(".container").css({ top: "0", height: "100%" });
         }
     });
-    /*$(".input-area > .collapse-block > .ground-label > .text").click(function(){
-      var id = $(this).attr("id");
-      var notFocusId;
-      if(id == "input"){
-        notFocusId = "peg4d";
-      } else {
-        notFocusId = "input";
-      }
-      var target = ".collapse-block[id='" + id + "']";
-      var notTarget = ".collapse-block[id='" + notFocusId + "']";
-      switch(inputFocus){
-        case "both":
-          inputToggle(id, target, notTarget, id, notFocusId);
-          break;
-        case "input":
-          if(id != "input"){
-            inputToggle("input", target, notTarget, id, notFocusId);
-          } else {
-            inputToggle("both", target, notTarget, id, notFocusId);
-          }
-          break;
-        case "peg4d":
-          if(id != "peg4d"){
-            inputToggle("peg4d", target, notTarget, id, notFocusId);
-          } else {
-            inputToggle("both", target, notTarget, id, notFocusId);
-          }
-          break;
-      }
-      });*/
-    $("#run").click(runCallback);
+    $("#generate").click(generateBxnez);
+    $("#format").click(runCallback);
     $(".visualize-btn").click(visualizeCallback);
     $("span[id='peg4d'] > .dropdown > ul > li > a").click(function () {
         console.log(this);
         setP4d($(this).attr("value"), $(this).text());
     });
     $(".konoha-btn").click(function () {
-        konohaEditor.setValue(inputEditor.getValue());
         $("html,body").animate({ scrollLeft: window.innerWidth }, 500);
     });
     $(".nez-btn").click(function () {
@@ -161,11 +120,30 @@ function runNez(source, p4d, callback, onerror) {
         error: onerror
     });
 }
-function runKonoha(source, callback, onerror) {
+function generateBxnez(e) {
+    var p4d = pegEditor.getValue();
+    runGenerate(p4d, function (res) {
+        konohaEditor.setValue(res.source);
+    }, function () {
+        console.log("sorry");
+    });
+}
+function runGenerate(p4d, callback, onerror) {
     $.ajax({
         type: "POST",
-        url: Config.basePath + "/konoha",
-        data: JSON.stringify({ source: source }),
+        url: Config.basePath + "/generate",
+        data: JSON.stringify({ p4d: p4d }),
+        dataType: 'json',
+        contentType: "application/json; charset=utf-8",
+        success: callback,
+        error: onerror
+    });
+}
+function runKonoha(source, p4d, bxnez, callback, onerror) {
+    $.ajax({
+        type: "POST",
+        url: Config.basePath + "/format",
+        data: JSON.stringify({ source: source, p4d: p4d, bxnez: bxnez }),
         dataType: 'json',
         contentType: "application/json; charset=utf-8",
         success: callback,
@@ -173,9 +151,10 @@ function runKonoha(source, callback, onerror) {
     });
 }
 function runCallback(e) {
-    var src = konohaEditor.getValue();
-    runKonoha(src, function (res) {
-        console.log(res);
+    var p4d = pegEditor.getValue();
+    var src = inputEditor.getValue();
+    var bxnez = konohaEditor.getValue();
+    runKonoha(src, p4d, bxnez, function (res) {
         $(".konoha-result[id='konoha']").val(res.source);
     }, function () {
         console.log("sorry");
