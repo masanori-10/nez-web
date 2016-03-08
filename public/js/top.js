@@ -3,10 +3,11 @@ var VisModelJS;
 var PolymerGestures;
 var pegEditor;
 var inputEditor;
-var konohaEditor;
+var nezEditor;
+var bxnezEditor;
 var navbarId = ["navbar-overview", "navbar-documents", "navbar-playground"];
 var contentId = ["overview", "documents", "playground"];
-var editorId = ["peg4d", "input", "output"];
+var editorId = ["peg4d", "input", "nez", "bxnez", "output"];
 var inputFocus = "both";
 var setEditorId = [];
 var reader = new FileReader();
@@ -19,10 +20,14 @@ $(function () {
     inputEditor.setTheme("ace/theme/xcode");
     inputEditor.getSession().setMode("ace/mode/markdown");
     inputEditor.setFontSize(12);
-    konohaEditor = ace.edit("konohaEditor");
-    konohaEditor.setTheme("ace/theme/xcode");
-    konohaEditor.getSession().setMode("ace/mode/java");
-    inputEditor.setFontSize(12);
+    nezEditor = ace.edit("nezEditor");
+    nezEditor.setTheme("ace/theme/xcode");
+    nezEditor.getSession().setMode("ace/mode/c_cpp");
+    nezEditor.setFontSize(12);
+    bxnezEditor = ace.edit("bxnezEditor");
+    bxnezEditor.setTheme("ace/theme/xcode");
+    bxnezEditor.getSession().setMode("ace/mode/markdown");
+    bxnezEditor.setFontSize(12);
     var root = document.getElementById("visualOutput");
     var panel = new VisModelJS.VisualModelPanel(root);
     var TopNode = createNodeViewFromP4DJson({ "": "" });
@@ -61,6 +66,10 @@ $(function () {
         console.log(this);
         setP4d($(this).attr("value"), $(this).text());
     });
+    $("span[id='nez'] > .dropdown > ul > li > a").click(function () {
+        console.log(this);
+        setNez($(this).attr("value"), $(this).text());
+    });
     $(".konoha-btn").click(function () {
         $("html,body").animate({ scrollLeft: window.innerWidth }, 500);
     });
@@ -73,13 +82,18 @@ $(function () {
         if (id == "input") {
             inputEditor.setValue("");
         }
-        else if (id == "nez") {
+        else if (id == "p4d") {
             pegEditor.setValue("");
             $("span[id='peg4d'] > .dropdown > button").text("None    ");
             $("span[id='peg4d'] > .dropdown > button").append("<span class=caret>");
         }
-        else if (id == "konoha") {
-            konohaEditor.setValue("");
+        else if (id == "nez") {
+            nezEditor.setValue("");
+            $("span[id='nez'] > .dropdown > button").text("None    ");
+            $("span[id='nez'] > .dropdown > button").append("<span class=caret>");
+        }
+        else if (id == "bxnez") {
+            bxnezEditor.setValue("");
         }
     });
     setSource();
@@ -121,25 +135,25 @@ function runNez(source, p4d, callback, onerror) {
     });
 }
 function generateBxnez(e) {
-    var p4d = pegEditor.getValue();
-    runGenerate(p4d, function (res) {
-        konohaEditor.setValue(res.source);
+    var nez = nezEditor.getValue();
+    runGenerate(nez, function (res) {
+        bxnezEditor.setValue(res.source);
     }, function () {
         console.log("sorry");
     });
 }
-function runGenerate(p4d, callback, onerror) {
+function runGenerate(nez, callback, onerror) {
     $.ajax({
         type: "POST",
         url: Config.basePath + "/generate",
-        data: JSON.stringify({ p4d: p4d }),
+        data: JSON.stringify({ nez: nez }),
         dataType: 'json',
         contentType: "application/json; charset=utf-8",
         success: callback,
         error: onerror
     });
 }
-function runKonoha(source, p4d, bxnez, callback, onerror) {
+function runFormat(source, p4d, bxnez, callback, onerror) {
     $.ajax({
         type: "POST",
         url: Config.basePath + "/format",
@@ -153,8 +167,8 @@ function runKonoha(source, p4d, bxnez, callback, onerror) {
 function runCallback(e) {
     var p4d = pegEditor.getValue();
     var src = inputEditor.getValue();
-    var bxnez = konohaEditor.getValue();
-    runKonoha(src, p4d, bxnez, function (res) {
+    var bxnez = bxnezEditor.getValue();
+    runFormat(src, p4d, bxnez, function (res) {
         $(".konoha-result[id='konoha']").val(res.source);
     }, function () {
         console.log("sorry");
@@ -275,6 +289,21 @@ function setP4d(fileName, displayName) {
         }
     });
 }
+function setNez(fileName, displayName) {
+    $.ajax({
+        type: "GET",
+        url: "./p4d/" + fileName + ".nez",
+        success: function (res) {
+            if (nezEditor != null) {
+                nezEditor.setValue(res);
+                nezEditor.clearSelection();
+                nezEditor.gotoLine(0);
+                $("span[id='nez'] > .dropdown > button").text(displayName + "    ");
+                $("span[id='nez'] > .dropdown > button").append("<span class=caret>");
+            }
+        }
+    });
+}
 function setSource() {
     var target = $('.fileUploader');
     target.each(function () {
@@ -311,6 +340,16 @@ function setSource() {
                 pegEditor.setValue(reader.result);
                 pegEditor.clearSelection();
                 pegEditor.gotoLine(0);
+                break;
+            case "nez":
+                nezEditor.setValue(reader.result);
+                nezEditor.clearSelection();
+                nezEditor.gotoLine(0);
+                break;
+            case "bxnez":
+                bxnezEditor.setValue(reader.result);
+                bxnezEditor.clearSelection();
+                bxnezEditor.gotoLine(0);
                 break;
         }
     });

@@ -129,7 +129,7 @@ router.post('/generate', function(req, res) {
     var exec_command = generate_command + ' -g ' + p4d_tempfile + ' > ' + dest_file;
     console.log(exec_command);
     console.log(req.body.source);
-    createFileAndExecGenerate(p4d_tempfile, req.body.p4d, exec_command, function(stdout) {
+    createFileAndExecGenerate(p4d_tempfile, req.body.nez, exec_command, function(stdout) {
         var data = fs.readFileSync(dest_file);
         console.log(data.toString());
         if(data.length > 0) {

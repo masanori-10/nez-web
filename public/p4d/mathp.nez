@@ -4,9 +4,7 @@ File        = Expression .*
 _           = S*
 S           = [ \t]
 
-Expression  = Sum
-Sum         = Product {$left ('+' _ #Add / '-' _ #Sub) $right(Product) }*
-Product     = Value {$left ('*' _ #Mul / '/' _ #Div / '%' _ #Mod) $right(Value) }*
+Expression  = Value {$left ('+' _ #Add / '-' _ #Sub /'*' _ #Mul / '/' _ #Div / '%' _ #Mod) $right(Value) }*
 Value       = { [0-9]+ #Integer } _
             / { [A-Za-z0-9_]+ #Variable } _
             / '(' _ Expression ')' _
