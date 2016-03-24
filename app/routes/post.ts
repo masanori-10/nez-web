@@ -169,7 +169,7 @@ router.post('/format', function(req, res) {
         return;
     }
     var dest_file = p4d_tempfile + '_rev.txt'
-    var exec_command = format_command + ' -g ' + p4d_tempfile + ' ' + src_tempfile + ' -b ' + bx_tempfile + ' > ' + dest_file;
+    var exec_command = format_command + ' -g ' + p4d_tempfile + ' ' + src_tempfile + ' ' + bx_tempfile + ' > ' + dest_file;
     console.log(exec_command);
     console.log(req.body.source);
     createFileAndExecFormat(src_tempfile, req.body.source, p4d_tempfile, req.body.p4d, bx_tempfile, req.body.bxnez , exec_command, function(stdout) {

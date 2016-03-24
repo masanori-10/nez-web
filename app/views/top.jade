@@ -44,6 +44,8 @@ block content
                     li(role="presentation")
                       a(role="menuitem", tabindex="-1", value="c") C
                     li(role="presentation")
+                      a(role="menuitem", tabindex="-1", value="javaright") Java
+                    li(role="presentation")
                       a(role="menuitem", tabindex="-1", value="javaScript4") JavaScript
                     li(role="presentation")
                       a(role="menuitem", tabindex="-1", value="konoha") Konoha
@@ -58,14 +60,7 @@ block content
           .p(style="height: 2%")
           .collapse-block(id="input")
             .ground-label(id="input")
-              span.text(id="input") Input Source&nbsp&nbsp&nbsp&nbsp
-                span File:&nbsp&nbsp
-                .fileUploader(style="display: inline")
-                  input.uploader(type="file", id="source", style="margin-left: 142px; margin-top: 2px; height: 30px; width: 94px;")
-                  .btn.btn-default(style="position: relative; padding: 4px 12px;", id="source")
-                    span.glyphicon.glyphicon-folder-open
-                    span.text &nbsp&nbsp&nbspImport
-                  span.txt(style="padding-left: 5px; font-size: 14px; padding-top: 2px; vertical-align: middle") None
+              span.text(id="input") Input Source
               i.fa.fa-refresh.btn-refresh(id="input")
             pre#inputEditor(name="example", style="height: calc(100% - 40px)")
         include visual
@@ -96,6 +91,8 @@ block content
                     li(role="presentation")
                       a(role="menuitem", tabindex="-1", value="c") C
                     li(role="presentation")
+                      a(role="menuitem", tabindex="-1", value="javaright") Java
+                    li(role="presentation")
                       a(role="menuitem", tabindex="-1", value="javaScript4") JavaScript
                     li(role="presentation")
                       a(role="menuitem", tabindex="-1", value="konoha") Konoha
@@ -106,7 +103,9 @@ block content
                     li(role="presentation")
                       a(role="menuitem", tabindex="-1", value="math") Math
                     li(role="presentation")
-                      a(role="menuitem", tabindex="-1", value="mathp") MathP
+                      a(role="menuitem", tabindex="-1", value="math_ref") MathRef
+                    li(role="presentation")
+                      a(role="menuitem", tabindex="-1", value="csv_ref") CSVRef
               i.fa.fa-refresh.btn-refresh(id="nez")
             pre#nezEditor(name="example", style="height: 100%")
           .p(style="height: 2%")

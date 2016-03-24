@@ -400,7 +400,7 @@ function setSource(){
       return false;
     });
   });
-
+  
   reader.addEventListener("load", function(){
     console.log(setEditorId)
     switch(setEditorId.shift()){

@@ -12,6 +12,7 @@ nez:
     path: './nez/nez.jar'
     option: 'parse'
     env: ''
+    
 generate:
     path: '../nez/nez.jar'
     option: 'nez.bx.CGenerate'
